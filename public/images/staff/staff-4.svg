@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 360" role="img" aria-label="Foto staff">
+  <rect width="320" height="360" rx="28" fill="#eff4e8"/>
+  <circle cx="160" cy="124" r="66" fill="#c99472"/>
+  <path d="M78 309c10-72 57-107 82-107s72 35 82 107" fill="#697b2e"/>
+  <path d="M95 101c9-44 41-67 78-65 35 2 59 24 66 63-32 13-79 12-144 2z" fill="#2b241f"/>
+  <text x="160" y="330" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#ffffff">BH</text>
+</svg>

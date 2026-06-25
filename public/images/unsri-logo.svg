@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="80" viewBox="0 0 220 80" role="img" aria-label="Universitas Sriwijaya">
+  <rect width="220" height="80" rx="8" fill="#ffffff"/>
+  <circle cx="40" cy="40" r="29" fill="#06204a"/>
+  <circle cx="40" cy="40" r="22" fill="#ffc400"/>
+  <circle cx="40" cy="40" r="13" fill="#ffffff"/>
+  <text x="40" y="45" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#06204a">US</text>
+  <text x="82" y="35" font-family="Arial, sans-serif" font-size="22" font-weight="800" fill="#06204a">SIneRGIS</text>
+  <text x="82" y="54" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0a316d">UNIVERSITAS SRIWIJAYA</text>
+</svg>

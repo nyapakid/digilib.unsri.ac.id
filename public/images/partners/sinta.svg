@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="110" viewBox="0 0 260 110" role="img" aria-label="SINTA">
+  <rect width="260" height="110" rx="12" fill="#ffffff"/>
+  <polygon points="52,25 61,45 83,48 67,64 71,86 52,75 33,86 37,64 21,48 43,45" fill="#ffc400"/>
+  <text x="98" y="65" font-family="Arial, sans-serif" font-size="38" font-weight="800" fill="#06204a">SINTA</text>
+</svg>

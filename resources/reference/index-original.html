@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digilib Universitas Sriwijaya</title>
+  <style>
+    :root {
+      --navy: #06204a;
+      --navy-2: #0a316d;
+      --yellow: #ffc400;
+      --yellow-2: #ffd84d;
+      --ink: #10203f;
+      --muted: #65748b;
+      --line: #e5eaf2;
+      --soft: #f6f8fc;
+      --white: #ffffff;
+      --shadow: 0 12px 30px rgba(6, 32, 74, 0.12);
+      --radius: 6px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Inter", "Segoe UI", Arial, sans-serif;
+      background: var(--white);
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    .container {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      background: var(--navy);
+      color: var(--white);
+      font-size: 13px;
+    }
+
+    .topbar .container,
+    .brandbar .container,
+    .navbar .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .topbar .container {
+      min-height: 42px;
+    }
+
+    .top-items {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+
+    .icon-text {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon {
+      display: inline-grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      color: var(--yellow);
+      flex: 0 0 auto;
+    }
+
+    .brandbar {
+      background: var(--white);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brandbar .container {
+      min-height: 132px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 260px;
+    }
+
+    .seal {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at center, var(--yellow) 0 32%, transparent 33%),
+        conic-gradient(from 0deg, var(--yellow), #f3a700, var(--yellow), #f3a700, var(--yellow));
+      box-shadow: inset 0 0 0 6px var(--navy), 0 5px 14px rgba(6, 32, 74, 0.18);
+      color: var(--navy);
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .seal::before {
+      content: "";
+      position: absolute;
+      inset: 17px;
+      border-radius: 50%;
+      background: var(--white);
+      box-shadow: inset 0 0 0 3px var(--yellow);
+    }
+
+    .seal span {
+      position: relative;
+      font-size: 21px;
+      line-height: 1;
+    }
+
+    .brand-title {
+      display: grid;
+      gap: 2px;
+    }
+
+    .brand-title strong {
+      color: var(--navy);
+      font-size: 31px;
+      line-height: 1;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+
+    .brand-title span {
+      color: var(--navy-2);
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .helpbox {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--muted);
+      text-align: left;
+    }
+
+    .helpbox .icon {
+      width: 50px;
+      height: 50px;
+      border: 2px solid var(--yellow);
+      border-radius: 50%;
+      background: #fff8d7;
+    }
+
+    .helpbox strong {
+      display: block;
+      color: var(--navy-2);
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: var(--white);
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 7px 20px rgba(6, 32, 74, 0.06);
+    }
+
+    .navbar .container {
+      min-height: 72px;
+    }
+
+    .menu-toggle {
+      display: none;
+      width: 44px;
+      height: 44px;
+      border: 0;
+      background: var(--navy);
+      color: var(--yellow);
+      cursor: pointer;
+    }
+
+    .menu {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .menu a {
+      display: block;
+      padding: 25px 15px;
+      color: var(--navy);
+      font-size: 14px;
+      font-weight: 800;
+      text-transform: uppercase;
+      transition: color 0.2s ease, background 0.2s ease;
+    }
+
+    .menu a:hover,
+    .menu a.active {
+      color: var(--navy);
+      background: var(--yellow);
+    }
+
+    .hero {
+      position: relative;
+      min-height: 540px;
+      overflow: hidden;
+      background:
+        linear-gradient(90deg, rgba(6, 32, 74, 0.96) 0%, rgba(6, 32, 74, 0.88) 37%, rgba(6, 32, 74, 0.18) 65%, rgba(6, 32, 74, 0.04) 100%),
+        url("https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1800&q=85") center / cover no-repeat;
+      color: var(--white);
+    }
+
+    .hero .container {
+      min-height: 540px;
+      display: flex;
+      align-items: center;
+    }
+
+    .hero-copy {
+      width: min(610px, 100%);
+      padding: 72px 0 86px;
+    }
+
+    .hero h1 {
+      margin: 0 0 18px;
+      font-size: clamp(42px, 5vw, 70px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .hero h1 span {
+      color: var(--yellow);
+    }
+
+    .hero p {
+      max-width: 570px;
+      margin: 0 0 30px;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 18px;
+    }
+
+    .hero-facts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin: 0 0 30px;
+    }
+
+    .hero-fact {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .hero-fact .icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: rgba(255, 196, 0, 0.16);
+      border: 1px solid rgba(255, 196, 0, 0.5);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      min-height: 46px;
+      padding: 0 20px;
+      border-radius: var(--radius);
+      border: 0;
+      color: var(--navy);
+      background: var(--yellow);
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 12px 22px rgba(255, 196, 0, 0.28);
+    }
+
+    .slider-dots {
+      position: absolute;
+      left: max(20px, calc((100vw - 1180px) / 2));
+      bottom: 28px;
+      display: flex;
+      gap: 9px;
+    }
+
+    .slider-dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.8);
+    }
+
+    .slider-dots span:first-child {
+      background: var(--yellow);
+    }
+
+    section {
+      padding: 54px 0;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 29px;
+      line-height: 1.2;
+    }
+
+    .see-all {
+      color: var(--navy-2);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .resources {
+      background: var(--white);
+    }
+
+    .resource-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .resource-card {
+      min-height: 142px;
+      padding: 20px 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--white);
+      text-align: center;
+      box-shadow: 0 8px 18px rgba(6, 32, 74, 0.04);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .resource-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--yellow);
+      box-shadow: var(--shadow);
+    }
+
+    .resource-card .icon {
+      width: 46px;
+      height: 46px;
+      margin: 0 auto 10px;
+      border-radius: 50%;
+      background: #fff7d1;
+      color: var(--navy);
+    }
+
+    .resource-card strong {
+      display: block;
+      color: var(--navy);
+      font-size: 14px;
+      line-height: 1.3;
+    }
+
+    .resource-card span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .two-columns {
+      display: grid;
+      grid-template-columns: 1.18fr 0.82fr;
+      gap: 36px;
+      align-items: start;
+    }
+
+    .service-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .service-card,
+    .news-card,
+    .gallery-card {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--white);
+      box-shadow: 0 8px 20px rgba(6, 32, 74, 0.06);
+    }
+
+    .service-card img,
+    .news-card img,
+    .gallery-card img {
+      width: 100%;
+      height: 165px;
+      object-fit: cover;
+    }
+
+    .service-body,
+    .news-body {
+      padding: 18px;
+    }
+
+    .service-body h3,
+    .news-body h3 {
+      margin: 0 0 8px;
+      color: var(--navy);
+      font-size: 18px;
+      line-height: 1.3;
+    }
+
+    .service-body p,
+    .news-body p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .small-btn {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: var(--radius);
+      background: var(--yellow);
+      color: var(--navy);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .facility-list {
+      display: grid;
+      gap: 15px;
+    }
+
+    .facility-item {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 13px;
+      align-items: start;
+    }
+
+    .facility-item .icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius);
+      background: var(--navy);
+      color: var(--yellow);
+    }
+
+    .facility-item h3 {
+      margin: 0 0 3px;
+      color: var(--navy);
+      font-size: 16px;
+      line-height: 1.3;
+    }
+
+    .facility-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .updates {
+      background: var(--soft);
+    }
+
+    .update-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+
+    .panel {
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--white);
+      box-shadow: 0 8px 20px rgba(6, 32, 74, 0.05);
+    }
+
+    .list {
+      display: grid;
+      gap: 20px;
+    }
+
+    .date-row {
+      display: grid;
+      grid-template-columns: 58px 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .date-badge {
+      display: grid;
+      place-items: center;
+      width: 58px;
+      height: 64px;
+      border-radius: var(--radius);
+      background: var(--navy);
+      color: var(--white);
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .date-badge strong {
+      font-size: 23px;
+    }
+
+    .date-badge span {
+      color: var(--yellow);
+      font-size: 12px;
+    }
+
+    .agenda .date-badge {
+      background: var(--yellow);
+      color: var(--navy);
+    }
+
+    .agenda .date-badge span {
+      color: var(--navy);
+    }
+
+    .date-row h3 {
+      margin: 0 0 4px;
+      color: var(--navy);
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    .date-row p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .latest-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 34px;
+    }
+
+    .news-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .news-body time {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .gallery-card img {
+      height: 145px;
+    }
+
+    .stats {
+      padding: 46px 0;
+      background: var(--navy);
+      color: var(--white);
+    }
+
+    .stats h2 {
+      margin: 0 0 26px;
+      font-size: 26px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .stat .icon {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      background: var(--yellow);
+      color: var(--navy);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 30px;
+      line-height: 1.1;
+    }
+
+    .stat span {
+      color: rgba(255, 255, 255, 0.76);
+      font-size: 14px;
+    }
+
+    .partners {
+      padding: 40px 0 50px;
+    }
+
+    .partner-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .partner {
+      display: grid;
+      place-items: center;
+      min-height: 82px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      color: var(--navy);
+      background: var(--white);
+      font-size: 19px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .footer {
+      background: #041936;
+      color: var(--white);
+    }
+
+    .footer-main {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr 0.9fr;
+      gap: 42px;
+      padding: 54px 0;
+    }
+
+    .footer h3 {
+      margin: 0 0 16px;
+      color: var(--yellow);
+      font-size: 17px;
+    }
+
+    .footer p,
+    .footer li {
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 14px;
+    }
+
+    .footer ul {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px 22px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .footer-brand .seal {
+      width: 54px;
+      height: 54px;
+      box-shadow: inset 0 0 0 4px var(--navy), 0 4px 12px rgba(0, 0, 0, 0.24);
+    }
+
+    .footer-brand .seal::before {
+      inset: 13px;
+    }
+
+    .footer-brand .seal span {
+      font-size: 15px;
+    }
+
+    .footer-brand strong {
+      display: block;
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .footer-brand span:last-child {
+      color: rgba(255, 255, 255, 0.74);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .copyright {
+      background: var(--yellow);
+      color: var(--navy);
+      text-align: center;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 14px;
+    }
+
+    .floating {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .floating .chat {
+      padding: 10px 14px;
+      border-radius: var(--radius);
+      background: var(--white);
+      color: var(--navy);
+      box-shadow: var(--shadow);
+      font-size: 14px;
+    }
+
+    .floating .wa,
+    .to-top {
+      display: grid;
+      place-items: center;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: var(--yellow);
+      color: var(--navy);
+      box-shadow: var(--shadow);
+      font-weight: 900;
+    }
+
+    .to-top {
+      border-radius: var(--radius);
+    }
+
+    .mobile-only {
+      display: none;
+    }
+
+    @media (max-width: 1040px) {
+      .resource-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .two-columns,
+      .latest-grid,
+      .footer-main {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .partner-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 780px) {
+      .container {
+        width: min(100% - 28px, 1180px);
+      }
+
+      .topbar .container,
+      .brandbar .container {
+        align-items: flex-start;
+        flex-direction: column;
+        justify-content: center;
+        padding: 14px 0;
+      }
+
+      .top-items {
+        gap: 10px;
+      }
+
+      .brandbar .container {
+        min-height: auto;
+      }
+
+      .helpbox {
+        display: none;
+      }
+
+      .brand-title strong {
+        font-size: 24px;
+      }
+
+      .brand-title span {
+        font-size: 12px;
+      }
+
+      .seal {
+        width: 62px;
+        height: 62px;
+      }
+
+      .menu-toggle {
+        display: grid;
+        place-items: center;
+      }
+
+      .navbar .container {
+        min-height: 62px;
+      }
+
+      .menu {
+        position: absolute;
+        top: 62px;
+        left: 0;
+        right: 0;
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        background: var(--white);
+        border-bottom: 1px solid var(--line);
+        box-shadow: var(--shadow);
+      }
+
+      .menu.open {
+        display: flex;
+      }
+
+      .menu a {
+        padding: 15px 22px;
+        border-top: 1px solid var(--line);
+      }
+
+      .mobile-only {
+        display: block;
+        color: var(--navy);
+        font-weight: 900;
+      }
+
+      .hero,
+      .hero .container {
+        min-height: 560px;
+      }
+
+      .hero {
+        background:
+          linear-gradient(90deg, rgba(6, 32, 74, 0.96) 0%, rgba(6, 32, 74, 0.83) 100%),
+          url("https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1400&q=85") center / cover no-repeat;
+      }
+
+      .hero-copy {
+        padding: 58px 0 78px;
+      }
+
+      .hero p {
+        font-size: 16px;
+      }
+
+      .hero-facts,
+      .service-grid,
+      .update-grid,
+      .news-list,
+      .stats-grid,
+      .resource-grid,
+      .partner-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .gallery-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .floating .chat {
+        display: none;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .brand {
+        gap: 12px;
+      }
+
+      .hero h1 {
+        font-size: 40px;
+      }
+
+      .section-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .gallery-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .footer ul {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="container">
+      <div class="top-items">
+        <span class="icon-text">
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-5.2 7-11a7 7 0 1 0-14 0c0 5.8 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+          </span>
+          Jl. Palembang - Prabumulih Km. 32, Indralaya, Ogan Ilir
+        </span>
+        <span class="icon-text">
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="m4 7 8 6 8-6"/></svg>
+          </span>
+          digilib@unsri.ac.id
+        </span>
+      </div>
+      <div class="top-items">
+        <span class="icon-text">
+          <span class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          </span>
+          Senin - Jumat 08.00 - 16.00 WIB
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <header class="brandbar">
+    <div class="container">
+      <a class="brand" href="#">
+        <span class="seal" aria-hidden="true"><span>US</span></span>
+        <span class="brand-title">
+          <strong>SIneRGIS</strong>
+          <span>Universitas Sriwijaya</span>
+        </span>
+      </a>
+      <div class="helpbox">
+        <span class="icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/></svg>
+        </span>
+        <span>
+          Butuh Bantuan? hubungi kami via WhatsApp
+          <strong>+62 811 1234 5678</strong>
+        </span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="navbar" aria-label="Navigasi utama">
+    <div class="container">
+      <button class="menu-toggle" type="button" aria-label="Buka menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <span class="mobile-only">Menu</span>
+      <ul class="menu" id="mainMenu">
+        <li><a class="active" href="#">Beranda</a></li>
+        <li><a href="#profil">Profil</a></li>
+        <li><a href="#fasilitas">Fasilitas</a></li>
+        <li><a href="#layanan">Layanan</a></li>
+        <li><a href="#peraturan">Peraturan</a></li>
+        <li><a href="#staff">Staff</a></li>
+        <li><a href="#lokasi">Lokasi</a></li>
+        <li><a href="#berita">Berita</a></li>
+        <li><a href="#galeri">Galeri</a></li>
+        <li><a href="#kontak">Kontak</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero" id="profil">
+      <div class="container">
+        <div class="hero-copy">
+          <h1>Digilib <span>Universitas Sriwijaya</span></h1>
+          <p>Pusat informasi digital untuk mendukung pembelajaran, penelitian, publikasi ilmiah, dan literasi sivitas akademika Universitas Sriwijaya.</p>
+          <div class="hero-facts">
+            <div class="hero-fact">
+              <span class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15 8.5 21l-.8-4.4L3.5 18 7 12"/><path d="m12 15 3.5 6 .8-4.4 4.2 1.4L17 12"/><circle cx="12" cy="8" r="5"/></svg>
+              </span>
+              Terakreditasi A<br>Perpustakaan Nasional RI
+            </div>
+            <div class="hero-fact">
+              <span class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v6l4 2"/></svg>
+              </span>
+              Jam Layanan<br>Senin - Jumat 08.00 - 16.00 WIB
+            </div>
+          </div>
+          <a class="btn" href="#resources">Telusuri Koleksi
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="slider-dots" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    </section>
+
+    <section class="resources" id="resources">
+      <div class="container">
+        <div class="section-head">
+          <h2>Digilib e-Resources</h2>
+          <a class="see-all" href="#">Lihat Semua
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" style="display:inline;vertical-align:-2px"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+          </a>
+        </div>
+        <div class="resource-grid">
+          <a class="resource-card" href="#">
+            <span class="icon"><svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg></span>
+            <strong>myUNSRI Library</strong><span>Akses akun perpustakaan</span>
+          </a>
+          <a class="resource-card" href="#">
+            <span class="icon"><svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/></svg></span>
+            <strong>Repository</strong><span>Karya ilmiah Unsri</span>
+          </a>
+          <a class="resource-card" href="#">
+            <span class="icon"><svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 3h10v18H7z"/><path d="M9 7h6M9 11h6M9 15h4"/></svg></span>
+            <strong>Online Catalog</strong><span>Penelusuran koleksi</span>
+          </a>
+          <a class="resource-card" href="#">
+            <span class="icon"><svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span>
+            <strong>SIneRGIS</strong><span>System for Integrated e-Resources & Library Gateway of Sriwijaya</span>
+          </a>
+          <a class="resource-card" href="#">
+            <span class="icon"><svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/></svg></span>
+            <strong>e-Proceeding</strong><span>Prosiding konferensi</span>
+          </a>
+          <a class="resource-card" href="#">
+            <span class="icon"><svg viewBox="0 0 24 24" width="25" height="25" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 4 6v6c0 5 3.4 8.6 8 10 4.6-1.4 8-5 8-10V6z"/><path d="M9 12l2 2 4-4"/></svg></span>
+            <strong>Database</strong><span>Basis data langganan</span>
+          </a>
+        
+        </div>
+      </div>
+    </section>
+
+    <section id="layanan">
+      <div class="container two-columns">
+        <div>
+          <div class="section-head">
+            <h2>Layanan</h2>
+            <a class="see-all" href="#">Lihat Semua →</a>
+          </div>
+          <div class="service-grid">
+            <article class="service-card">
+              <img src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=700&q=80" alt="Mahasiswa menggunakan layanan sirkulasi">
+              <div class="service-body">
+                <h3>Layanan Sirkulasi</h3>
+                <p>Peminjaman, perpanjangan, dan pengembalian koleksi perpustakaan.</p>
+                <a class="small-btn" href="#">Selengkapnya →</a>
+              </div>
+            </article>
+            <article class="service-card">
+              <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=700&q=80" alt="Diskusi referensi akademik">
+              <div class="service-body">
+                <h3>Layanan Referensi</h3>
+                <p>Bantuan penelusuran informasi akademik dan sumber rujukan ilmiah.</p>
+                <a class="small-btn" href="#">Selengkapnya →</a>
+              </div>
+            </article>
+            <article class="service-card">
+              <img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=700&q=80" alt="Ruang layanan digital">
+              <div class="service-body">
+                <h3>Layanan Digital</h3>
+                <p>Akses sumber daya digital, repository, dan literasi informasi.</p>
+                <a class="small-btn" href="#">Selengkapnya →</a>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <aside id="fasilitas">
+          <div class="section-head">
+            <h2>Fasilitas</h2>
+            <a class="see-all" href="#">Lihat Semua →</a>
+          </div>
+          <div class="facility-list">
+            <div class="facility-item">
+              <span class="icon"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/></svg></span>
+              <div><h3>Ruang Baca Nyaman</h3><p>Area baca ber-AC dengan suasana kondusif untuk belajar.</p></div>
+            </div>
+            <div class="facility-item">
+              <span class="icon"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13a10 10 0 0 1 14 0"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M12 20h.01"/></svg></span>
+              <div><h3>Hotspot Area</h3><p>Wi-Fi cepat untuk mendukung akses internet mahasiswa.</p></div>
+            </div>
+            <div class="facility-item">
+              <span class="icon"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11h18"/><path d="M5 7h14v10H5z"/><path d="M9 21h6"/></svg></span>
+              <div><h3>Komputer & Multimedia</h3><p>Unit komputer dan perangkat multimedia untuk akses digital.</p></div>
+            </div>
+            <div class="facility-item">
+              <span class="icon"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16v12H4z"/><path d="M8 10h8M8 14h5"/></svg></span>
+              <div><h3>OPAC</h3><p>Aplikasi penelusuran koleksi dan informasi ketersediaan buku.</p></div>
+            </div>
+            <div class="facility-item">
+              <span class="icon"><svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 10V7a5 5 0 0 1 10 0v3"/><rect x="5" y="10" width="14" height="10" rx="2"/></svg></span>
+              <div><h3>Loker Penyimpanan</h3><p>Tempat penyimpanan barang pengunjung dengan akses aman.</p></div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="updates">
+      <div class="container update-grid">
+        <div class="panel">
+          <div class="section-head">
+            <h2>Pengumuman</h2>
+            <a class="see-all" href="#">Lihat Semua →</a>
+          </div>
+          <div class="list">
+            <article class="date-row">
+              <div class="date-badge"><strong>23</strong><span>JUN</span></div>
+              <div><h3>Perubahan Jam Layanan Perpustakaan</h3><p>Sehubungan dengan kegiatan akademik, jam layanan perpustakaan menyesuaikan jadwal semester.</p></div>
+            </article>
+            <article class="date-row">
+              <div class="date-badge"><strong>18</strong><span>JUN</span></div>
+              <div><h3>Pelatihan Literasi Informasi</h3><p>Ayo ikuti pelatihan literasi informasi untuk mahasiswa baru Universitas Sriwijaya.</p></div>
+            </article>
+            <article class="date-row">
+              <div class="date-badge"><strong>10</strong><span>JUN</span></div>
+              <div><h3>Maintenance Sistem Repository</h3><p>Sistem repository akan dilakukan pemeliharaan pada pukul 20.00 - 23.00 WIB.</p></div>
+            </article>
+          </div>
+        </div>
+
+        <div class="panel agenda">
+          <div class="section-head">
+            <h2>Agenda</h2>
+            <a class="see-all" href="#">Lihat Semua →</a>
+          </div>
+          <div class="list">
+            <article class="date-row">
+              <div class="date-badge"><strong>25</strong><span>JUN</span></div>
+              <div><h3>Workshop Penulisan Karya Ilmiah</h3><p>09.00 - 12.00 WIB · Ruang Seminar Lantai 3</p></div>
+            </article>
+            <article class="date-row">
+              <div class="date-badge"><strong>02</strong><span>JUL</span></div>
+              <div><h3>Bedah Buku</h3><p>13.00 - 15.00 WIB · Ruang Diskusi Perpustakaan</p></div>
+            </article>
+            <article class="date-row">
+              <div class="date-badge"><strong>09</strong><span>JUL</span></div>
+              <div><h3>Pelatihan Mendeley</h3><p>09.00 - 12.00 WIB · Lab Komputer Perpustakaan</p></div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="berita">
+      <div class="container latest-grid">
+        <div>
+          <div class="section-head">
+            <h2>Berita Terbaru</h2>
+            <a class="see-all" href="#">Lihat Semua →</a>
+          </div>
+          <div class="news-list">
+            <article class="news-card">
+              <img src="https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=700&q=80" alt="Gedung kampus">
+              <div class="news-body">
+                <time>20 Juni 2026</time>
+                <h3>Digilib UNSRI Perkuat Layanan Akademik Digital</h3>
+              </div>
+            </article>
+            <article class="news-card">
+              <img src="https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=700&q=80" alt="Kegiatan mahasiswa">
+              <div class="news-body">
+                <time>15 Juni 2026</time>
+                <h3>Dukungan Literasi untuk Program Kampus Merdeka</h3>
+              </div>
+            </article>
+            <article class="news-card">
+              <img src="https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=700&q=80" alt="Mahasiswa berdiskusi">
+              <div class="news-body">
+                <time>8 Juni 2026</time>
+                <h3>Kelas Riset Bantu Mahasiswa Menemukan Referensi</h3>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div id="galeri">
+          <div class="section-head">
+            <h2>Galeri</h2>
+            <a class="see-all" href="#">Lihat Semua →</a>
+          </div>
+          <div class="gallery-grid">
+            <a class="gallery-card" href="#"><img src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=700&q=80" alt="Rak buku perpustakaan"></a>
+            <a class="gallery-card" href="#"><img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=700&q=80" alt="Interior perpustakaan"></a>
+            <a class="gallery-card" href="#"><img src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=700&q=80" alt="Ruang belajar"></a>
+            <a class="gallery-card" href="#"><img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=700&q=80" alt="Mahasiswa di komputer"></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="container">
+        <h2>Statistik Pengunjung <span style="color:var(--yellow);font-size:15px">(Tahun 2026)</span></h2>
+        <div class="stats-grid">
+          <div class="stat"><span class="icon"><svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-8 0v2"/><circle cx="12" cy="7" r="4"/></svg></span><div><strong>125.680</strong><span>Total Pengunjung</span></div></div>
+          <div class="stat"><span class="icon"><svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/></svg></span><div><strong>48.230</strong><span>Koleksi Digital</span></div></div>
+          <div class="stat"><span class="icon"><svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg></span><div><strong>96.412</strong><span>Unduhan</span></div></div>
+          <div class="stat"><span class="icon"><svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/></svg></span><div><strong>12.875</strong><span>Anggota Aktif</span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="partners">
+      <div class="container">
+        <div class="section-head">
+          <h2>Mitra & Database</h2>
+        </div>
+        <div class="partner-grid">
+          <div class="partner">Perpusnas</div>
+          <div class="partner">Garuda</div>
+          <div class="partner">EBSCO</div>
+          <div class="partner">ProQuest</div>
+          <div class="partner">ScienceDirect</div>
+          <div class="partner">SINTA</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" id="kontak">
+    <div class="container footer-main">
+      <div>
+        <div class="footer-brand">
+          <span class="seal" aria-hidden="true"><span>US</span></span>
+          <span><strong>DIGILIB</strong><span>Universitas Sriwijaya</span></span>
+        </div>
+        <p>Pusat informasi digital yang mendukung kegiatan akademik, penelitian, pengabdian masyarakat, dan publikasi ilmiah Universitas Sriwijaya.</p>
+      </div>
+      <div>
+        <h3>Tautan</h3>
+        <ul>
+          <li><a href="#">Beranda</a></li>
+          <li><a href="#staff">Staff</a></li>
+          <li><a href="#profil">Profil</a></li>
+          <li><a href="#lokasi">Lokasi</a></li>
+          <li><a href="#fasilitas">Fasilitas</a></li>
+          <li><a href="#berita">Berita</a></li>
+          <li><a href="#layanan">Layanan</a></li>
+          <li><a href="#galeri">Galeri</a></li>
+          <li><a href="#peraturan">Peraturan</a></li>
+          <li><a href="#kontak">Kontak</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Kontak Kami</h3>
+        <p>Jl. Palembang - Prabumulih Km. 32, Indralaya, Ogan Ilir 30662, Sumatera Selatan</p>
+        <p>(0711) 580069<br>digilib@unsri.ac.id</p>
+      </div>
+      <div>
+        <h3>Jam Layanan</h3>
+        <p>Senin - Jumat<br>08.00 - 16.00 WIB</p>
+        <p>Sabtu - Minggu<br>Tutup</p>
+      </div>
+    </div>
+    <div class="copyright">© 2026 Digilib Universitas Sriwijaya. All rights reserved.</div>
+  </footer>
+
+  <div class="floating" aria-label="Bantuan cepat">
+    <a class="chat" href="#">Butuh bantuan? Klik di sini!</a>
+    <a class="wa" href="https://wa.me/628117874088" aria-label="WhatsApp">
+      <svg viewBox="0 0 24 24" width="27" height="27" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-12.5 7.3L3 20l1.3-5.2A8.4 8.4 0 1 1 21 11.5Z"/><path d="M8.5 8.5c.4 3 2.3 5.1 5.3 6 .7.2 1.3-.4 1.7-1l.3-.5c.2-.4.1-.8-.3-1l-1.4-.7c-.3-.2-.7-.1-.9.2l-.4.5c-1-.5-1.8-1.2-2.3-2.2l.5-.4c.3-.2.4-.6.2-.9l-.7-1.4c-.2-.4-.7-.5-1-.3l-.5.3c-.4.2-.6.7-.5 1.4Z"/></svg>
+    </a>
+    <a class="to-top" href="#" aria-label="Kembali ke atas">↑</a>
+  </div>
+
+  <script>
+    const toggle = document.querySelector(".menu-toggle");
+    const menu = document.querySelector("#mainMenu");
+
+    toggle.addEventListener("click", () => {
+      const isOpen = menu.classList.toggle("open");
+      toggle.setAttribute("aria-expanded", String(isOpen));
+    });
+
+    menu.addEventListener("click", (event) => {
+      if (event.target.matches("a")) {
+        menu.classList.remove("open");
+        toggle.setAttribute("aria-expanded", "false");
+      }
+    });
+  </script>
+</body>
+</html>

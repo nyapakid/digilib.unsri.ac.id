@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 360" role="img" aria-label="Foto staff">
+  <rect width="320" height="360" rx="28" fill="#e8f1ef"/>
+  <circle cx="160" cy="122" r="68" fill="#f2c9a5"/>
+  <path d="M82 306c9-70 55-106 78-106s69 36 78 106" fill="#1b6f6a"/>
+  <path d="M91 93c15-48 66-72 116-42 18 11 30 29 34 51-42-2-84-11-124-28-9 4-17 11-26 19z" fill="#273344"/>
+  <text x="160" y="330" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#ffffff">RM</text>
+</svg>

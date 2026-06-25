@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="110" viewBox="0 0 260 110" role="img" aria-label="ScienceDirect">
+  <rect width="260" height="110" rx="12" fill="#ffffff"/>
+  <circle cx="47" cy="55" r="26" fill="#ffc400"/>
+  <path d="M35 59l10 10 20-26" fill="none" stroke="#06204a" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="86" y="52" font-family="Arial, sans-serif" font-size="25" font-weight="800" fill="#06204a">Science</text>
+  <text x="86" y="76" font-family="Arial, sans-serif" font-size="25" font-weight="800" fill="#0a316d">Direct</text>
+</svg>

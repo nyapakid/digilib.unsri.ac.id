@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="110" viewBox="0 0 260 110" role="img" aria-label="ProQuest">
+  <rect width="260" height="110" rx="12" fill="#ffffff"/>
+  <path d="M37 30h38v50H37z" fill="#ffc400"/>
+  <path d="M45 40h22M45 53h22M45 66h14" stroke="#06204a" stroke-width="5" stroke-linecap="round"/>
+  <text x="96" y="64" font-family="Arial, sans-serif" font-size="32" font-weight="800" fill="#06204a">ProQuest</text>
+</svg>

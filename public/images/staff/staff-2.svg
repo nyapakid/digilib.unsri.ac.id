@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 360" role="img" aria-label="Foto staff">
+  <rect width="320" height="360" rx="28" fill="#eef2fa"/>
+  <circle cx="160" cy="126" r="66" fill="#d9a57e"/>
+  <path d="M76 310c11-72 58-108 84-108s73 36 84 108" fill="#365a91"/>
+  <path d="M96 96c6-42 38-67 73-64 39 3 62 30 65 72-43 0-89-8-138-8z" fill="#202536"/>
+  <text x="160" y="330" text-anchor="middle" font-family="Arial, sans-serif" font-size="42" font-weight="700" fill="#ffffff">AS</text>
+</svg>

@@ -22,12 +22,19 @@ class SiteSettingController extends Controller
     public function update(Request $request): RedirectResponse
     {
         $data = $request->validate($this->rules());
+        $fileFields = collect($this->fields())
+            ->filter(fn (array $field) => $field[2] === 'file')
+            ->pluck(0);
 
-        unset($data['logo_path']);
-
-        if ($request->hasFile('logo_path')) {
-            $data['logo_path'] = Storage::url($request->file('logo_path')->store('uploads/site', 'public'));
+        foreach ($fileFields as $field) {
+            unset($data[$field]);
         }
+
+        $fileFields->each(function (string $field) use ($request, &$data): void {
+            if ($request->hasFile($field)) {
+                $data[$field] = Storage::url($request->file($field)->store('uploads/site', 'public'));
+            }
+        });
 
         SiteSetting::current()->update($data);
 
@@ -43,6 +50,7 @@ class SiteSettingController extends Controller
             ['brand_name', 'Nama Brand Header', 'text'],
             ['university_name', 'Nama Institusi', 'text'],
             ['logo_path', 'Upload Logo Gambar', 'file'],
+            ['page_hero_image_path', 'Gambar Background Page Hero', 'file'],
             ['address', 'Alamat', 'textarea'],
             ['email', 'Email', 'text'],
             ['phone', 'Telepon', 'text'],
@@ -52,12 +60,6 @@ class SiteSettingController extends Controller
             ['help_text', 'Teks Bantuan', 'text'],
             ['footer_description', 'Deskripsi Footer', 'textarea'],
             ['copyright_text', 'Copyright', 'text'],
-            ['hero_fact_1_title', 'Fakta Hero 1 - Judul', 'text'],
-            ['hero_fact_1_text', 'Fakta Hero 1 - Teks', 'text'],
-            ['hero_fact_1_icon', 'Fakta Hero 1 - Ikon', 'text'],
-            ['hero_fact_2_title', 'Fakta Hero 2 - Judul', 'text'],
-            ['hero_fact_2_text', 'Fakta Hero 2 - Teks', 'text'],
-            ['hero_fact_2_icon', 'Fakta Hero 2 - Ikon', 'text'],
             ['stats_title', 'Judul Statistik', 'text'],
             ['stats_subtitle', 'Subjudul Statistik', 'text'],
         ];

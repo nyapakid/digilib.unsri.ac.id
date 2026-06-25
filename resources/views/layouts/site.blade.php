@@ -8,6 +8,9 @@
 </head>
 <body id="top">
     @php($whatsapp = preg_replace('/\D+/', '', (string) $site->whatsapp_number))
+    @php($topMenus = $menus->filter(fn ($menu) => blank($menu->parent_id)))
+    @php($menuChildren = $menus->filter(fn ($menu) => filled($menu->parent_id))->groupBy('parent_id'))
+    @php($menuUrl = fn ($menu) => str_starts_with($menu->url, '#') ? route('home').$menu->url : $menu->url)
 
     <div class="topbar">
         <div class="container">
@@ -17,14 +20,12 @@
                     {{ $site->address }}
                 </span>
                 <span class="icon-text">
-                    <span class="icon" aria-hidden="true"><x-icon name="mail" :size="19" /></span>
-                    {{ $site->email }}
-                </span>
+                   
             </div>
             <div class="top-items">
                 <span class="icon-text">
-                    <span class="icon" aria-hidden="true"><x-icon name="clock" :size="19" /></span>
-                    {{ $site->office_hours }}
+                    <span class="icon" aria-hidden="true"><x-icon name="mail" :size="19" /></span>
+                    {{ $site->email }}
                 </span>
             </div>
         </div>
@@ -60,14 +61,26 @@
             </button>
             <span class="mobile-only">Menu</span>
             <ul class="menu" id="mainMenu">
-                @foreach ($menus as $menu)
-                    @php($menuUrl = str_starts_with($menu->url, '#') ? route('home').$menu->url : $menu->url)
-                    <li>
+                @foreach ($topMenus as $menu)
+                    @php($children = $menuChildren->get($menu->id, collect()))
+                    <li @class(['has-dropdown' => $children->isNotEmpty()])>
                         <a @class(['active' => $loop->first && request()->routeIs('home')])
-                           href="{{ $menuUrl }}"
+                           href="{{ $menuUrl($menu) }}"
                            @if($menu->opens_new_tab) target="_blank" rel="noopener" @endif>
                             {{ $menu->label }}
+                            @if($children->isNotEmpty())
+                                <span class="dropdown-caret" aria-hidden="true">&#9662;</span>
+                            @endif
                         </a>
+                        @if($children->isNotEmpty())
+                            <ul class="menu-dropdown">
+                                @foreach($children as $child)
+                                    <li>
+                                        <a href="{{ $menuUrl($child) }}" @if($child->opens_new_tab) target="_blank" rel="noopener" @endif>{{ $child->label }}</a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
                     </li>
                 @endforeach
             </ul>
@@ -92,9 +105,11 @@
             <div>
                 <h3>Tautan</h3>
                 <ul>
-                    @foreach ($menus as $menu)
-                        @php($menuUrl = str_starts_with($menu->url, '#') ? route('home').$menu->url : $menu->url)
-                        <li><a href="{{ $menuUrl }}">{{ $menu->label }}</a></li>
+                    @foreach ($topMenus as $menu)
+                        <li><a href="{{ $menuUrl($menu) }}">{{ $menu->label }}</a></li>
+                        @foreach($menuChildren->get($menu->id, collect()) as $child)
+                            <li><a href="{{ $menuUrl($child) }}">- {{ $child->label }}</a></li>
+                        @endforeach
                     @endforeach
                 </ul>
             </div>

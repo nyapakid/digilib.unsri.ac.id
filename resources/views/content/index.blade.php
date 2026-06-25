@@ -5,6 +5,7 @@
 @section('content')
 <main>
     <section class="page-hero">
+        @include('partials.page-hero-image')
         <div class="container">
             <p class="crumb"><a href="{{ route('home') }}">Beranda</a> / {{ $title }}</p>
             <h1>{{ $title }}</h1>
@@ -17,7 +18,7 @@
             <div class="content-grid">
                 @forelse($items as $item)
                     @php($imageUrl = data_get($item, 'image_url'))
-                    <article class="content-card">
+                    <article class="content-card" @if($type === 'resources' && data_get($item, 'background_color')) style="--resource-bg: {{ data_get($item, 'background_color') }};" @endif>
                         @if($imageUrl)
                             <a href="{{ route($type.'.show', $item) }}">
                                 <img src="{{ $imageUrl }}" alt="{{ $item->title }}">

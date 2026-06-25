@@ -20,7 +20,7 @@
                                 <img class="upload-preview" src="{{ $site->{$name} }}" alt="{{ $label }}">
                             @endif
                             <input type="file" name="{{ $name }}" accept="image/*">
-                            <small class="field-help">Kosongkan jika tidak ingin mengganti logo.</small>
+                            <small class="field-help">{{ $name === 'logo_path' ? 'Kosongkan jika tidak ingin mengganti logo.' : 'Kosongkan jika tidak ingin mengganti gambar.' }}</small>
                         @else
                             <input type="text" name="{{ $name }}" value="{{ old($name, $site->{$name}) }}">
                         @endif

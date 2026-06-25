@@ -5,6 +5,7 @@
 @section('content')
 <main>
     <section class="page-hero">
+        @include('partials.page-hero-image')
         <div class="container">
             <p class="crumb"><a href="{{ route('home') }}">Beranda</a> / <a href="{{ route($type.'.index') }}">{{ $sectionTitle }}</a></p>
             <h1>{{ $item->title }}</h1>

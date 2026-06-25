@@ -34,6 +34,9 @@
                                 @elseif(isset($item->slug))
                                     <small>/halaman/{{ $item->slug }}</small>
                                 @endif
+                                @if($type === 'menus' && $item->parent)
+                                    <small>Child dari: {{ $item->parent->label }}</small>
+                                @endif
                             </td>
                             <td>{{ $item->sort_order }}</td>
                             <td>

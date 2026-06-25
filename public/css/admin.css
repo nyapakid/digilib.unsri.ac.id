@@ -308,8 +308,62 @@ label {
   font-weight: 800;
 }
 
+.field-group,
 label.full {
   grid-column: 1 / -1;
+}
+
+.field-group {
+  display: grid;
+  gap: 10px;
+  color: var(--navy);
+  font-weight: 800;
+}
+
+.field-label {
+  display: block;
+}
+
+.radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.radio-row {
+  display: inline-flex;
+  align-items: center;
+  width: auto;
+  min-height: 42px;
+  padding: 0 13px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--white);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.radio-row input {
+  width: 18px;
+  height: 18px;
+  min-height: 18px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  accent-color: var(--yellow);
+}
+
+.menu-link-field {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--soft);
+}
+
+.menu-link-field [hidden] {
+  display: none !important;
 }
 
 input,
@@ -326,6 +380,12 @@ input,
 select {
   min-height: 42px;
   padding: 0 12px;
+}
+
+input[type="color"] {
+  width: 78px;
+  padding: 4px;
+  cursor: pointer;
 }
 
 textarea {

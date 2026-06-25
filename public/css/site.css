@@ -214,6 +214,10 @@ img {
   list-style: none;
 }
 
+.menu li {
+  position: relative;
+}
+
 .menu a {
   display: block;
   padding: 25px 15px;
@@ -224,15 +228,58 @@ img {
   transition: color 0.2s ease, background 0.2s ease;
 }
 
+.dropdown-caret {
+  margin-left: 5px;
+  font-size: 11px;
+}
+
 .menu a:hover,
 .menu a.active {
   color: var(--navy);
   background: var(--yellow);
 }
 
+.menu-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 30;
+  display: grid;
+  min-width: 220px;
+  margin: 0;
+  padding: 8px 0;
+  list-style: none;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--yellow);
+  border-radius: 0 0 var(--radius) var(--radius);
+  background: var(--white);
+  box-shadow: var(--shadow);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.has-dropdown:hover > .menu-dropdown,
+.has-dropdown:focus-within > .menu-dropdown {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.menu-dropdown a {
+  padding: 11px 16px;
+  white-space: nowrap;
+  text-transform: none;
+}
+
+.menu-dropdown a:hover {
+  background: var(--soft);
+}
+
 .hero {
   position: relative;
-  min-height: 540px;
+  min-height: 620px;
   overflow: hidden;
   color: var(--white);
 }
@@ -244,18 +291,80 @@ img {
 .hero-slide {
   position: absolute;
   inset: 0;
+  z-index: 0;
+  overflow: hidden;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.7s ease;
 }
 
+.hero-slide-bg {
+  position: absolute;
+  inset: -2%;
+  z-index: 0;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  transform: scale(1.04);
+  transform-origin: center center;
+  will-change: transform;
+}
+
 .hero-slide.active {
+  z-index: 1;
   opacity: 1;
   pointer-events: auto;
 }
 
+.hero-slide.active .hero-slide-bg {
+  animation-duration: 6800ms;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+.hero-slide.hero-zoom-in.active .hero-slide-bg {
+  animation-name: heroZoomIn;
+}
+
+.hero-slide.hero-zoom-out.active .hero-slide-bg {
+  animation-name: heroZoomOut;
+}
+
+.hero-matrix-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  opacity: 0.48;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+@keyframes heroZoomIn {
+  from {
+    transform: scale(1.02);
+  }
+
+  to {
+    transform: scale(1.12);
+  }
+}
+
+@keyframes heroZoomOut {
+  from {
+    transform: scale(1.14);
+  }
+
+  to {
+    transform: scale(1.03);
+  }
+}
+
 .hero .container {
-  min-height: 540px;
+  position: relative;
+  z-index: 2;
+  min-height: 620px;
   display: flex;
   align-items: center;
 }
@@ -324,6 +433,7 @@ img {
 
 .slider-dots {
   position: absolute;
+  z-index: 3;
   left: max(20px, calc((100vw - 1180px) / 2));
   bottom: 28px;
   display: flex;
@@ -391,7 +501,7 @@ section {
   padding: 20px 12px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: var(--white);
+  background: var(--resource-bg, var(--white));
   text-align: center;
   box-shadow: 0 8px 18px rgba(6, 32, 74, 0.04);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
@@ -404,12 +514,21 @@ section {
 }
 
 .resource-card .icon {
+  display: grid;
+  place-items: center;
   width: 46px;
   height: 46px;
   margin: 0 auto 10px;
   border-radius: 50%;
   background: #fff7d1;
   color: var(--navy);
+  line-height: 0;
+}
+
+.resource-card .icon svg {
+  display: block;
+  width: 25px;
+  height: 25px;
 }
 
 .resource-card strong {
@@ -419,7 +538,7 @@ section {
   line-height: 1.3;
 }
 
-.resource-card span {
+.resource-card > span:not(.icon) {
   display: block;
   margin-top: 4px;
   color: var(--muted);
@@ -450,12 +569,42 @@ section {
   box-shadow: 0 8px 20px rgba(6, 32, 74, 0.06);
 }
 
+.service-card > a:first-child,
+.news-card > a:first-child,
+.gallery-card {
+  display: block;
+  overflow: hidden;
+}
+
 .service-card img,
 .news-card img,
 .gallery-card img {
   width: 100%;
   height: 165px;
   object-fit: cover;
+}
+
+.service-card img,
+.news-card img,
+.gallery-card img,
+.facility-thumb img,
+.staff-card img,
+.content-card img,
+.partner img,
+.detail-image {
+  transition: transform 0.42s ease, filter 0.42s ease;
+  will-change: transform;
+}
+
+.service-card:hover img,
+.news-card:hover img,
+.gallery-card:hover img,
+.facility-item:hover .facility-thumb img,
+.staff-card:hover img,
+.content-card:hover img,
+.partner:hover img,
+.detail-image:hover {
+  transform: scale(1.08);
 }
 
 .service-body,
@@ -517,6 +666,21 @@ a.facility-item:hover {
   color: var(--yellow);
 }
 
+.facility-thumb {
+  display: block;
+  width: 44px;
+  height: 44px;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--soft);
+}
+
+.facility-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .facility-item h3 {
   margin: 0 0 3px;
   color: var(--navy);
@@ -553,9 +717,16 @@ a.facility-item:hover {
   box-shadow: 0 8px 20px rgba(6, 32, 74, 0.06);
 }
 
+.staff-photo {
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--soft);
+}
+
 .staff-card img {
   width: 100%;
-  height: 245px;
+  height: 100%;
   object-fit: cover;
 }
 
@@ -685,6 +856,64 @@ a.date-row:hover {
   height: 145px;
 }
 
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.58s ease,
+    transform 0.58s ease;
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide.active .hero-slide-bg {
+    animation: none;
+    transform: scale(1.04);
+  }
+
+  .hero-matrix-canvas {
+    display: none;
+  }
+
+  .partner-track {
+    transition: none;
+  }
+
+  .reveal-on-scroll {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .service-card img,
+  .news-card img,
+  .gallery-card img,
+  .facility-thumb img,
+  .staff-card img,
+  .content-card img,
+  .partner img,
+  .detail-image {
+    transition: none;
+  }
+
+  .service-card:hover img,
+  .news-card:hover img,
+  .gallery-card:hover img,
+  .facility-item:hover .facility-thumb img,
+  .staff-card:hover img,
+  .content-card:hover img,
+  .partner:hover img,
+  .detail-image:hover {
+    transform: none;
+  }
+}
+
 .stats {
   padding: 46px 0;
   background: var(--navy);
@@ -736,16 +965,36 @@ a.date-row:hover {
   padding: 40px 0 50px;
 }
 
-.partner-grid {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 16px;
+.partner-carousel {
+  position: relative;
+}
+
+.partner-viewport {
+  overflow: hidden;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.partner-viewport.is-dragging {
+  cursor: grabbing;
+}
+
+.partner-track {
+  display: flex;
+  gap: 18px;
+  will-change: transform;
+  transition: transform 0.42s ease;
 }
 
 .partner {
   display: grid;
   place-items: center;
-  min-height: 82px;
+  flex: 0 0 calc((100% - 72px) / 5);
+  aspect-ratio: 1 / 1;
+  min-width: 0;
+  padding: 18px;
+  overflow: hidden;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   color: var(--navy);
@@ -755,16 +1004,62 @@ a.date-row:hover {
   text-align: center;
 }
 
+.partner-logo {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+}
+
 .partner img {
-  width: min(190px, 88%);
-  max-height: 68px;
+  width: min(100%, 172px);
+  height: min(100%, 172px);
   object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.partner-name {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  line-height: 1.25;
 }
 
 .page-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   padding: 74px 0;
   background: var(--navy);
   color: var(--white);
+}
+
+.page-hero::before {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(90deg, rgba(6, 32, 74, 0.9) 0%, rgba(6, 32, 74, 0.72) 48%, rgba(6, 32, 74, 0.64) 100%),
+    rgba(6, 32, 74, 0.5);
+  content: "";
+  pointer-events: none;
+}
+
+.page-hero .container {
+  position: relative;
+  z-index: 2;
+}
+
+.page-hero-bg {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  pointer-events: none;
 }
 
 .page-hero h1 {
@@ -806,13 +1101,24 @@ a.date-row:hover {
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  background: var(--white);
+  background: var(--resource-bg, var(--white));
   box-shadow: 0 8px 20px rgba(6, 32, 74, 0.06);
+}
+
+.content-card > a:first-child,
+.staff-card > a {
+  display: block;
+}
+
+.content-card > a:first-child:not(.content-icon) {
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--soft);
 }
 
 .content-card img {
   width: 100%;
-  height: 190px;
+  height: 100%;
   object-fit: cover;
 }
 
@@ -1042,8 +1348,12 @@ a.date-row:hover {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .partner-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .partner-track {
+    gap: 16px;
+  }
+
+  .partner {
+    flex-basis: calc((100% - 32px) / 3);
   }
 }
 
@@ -1118,9 +1428,31 @@ a.date-row:hover {
     display: flex;
   }
 
+  .menu li {
+    width: 100%;
+  }
+
   .menu a {
     padding: 15px 22px;
     border-top: 1px solid var(--line);
+  }
+
+  .menu-dropdown {
+    position: static;
+    display: grid;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+  }
+
+  .menu-dropdown a {
+    padding-left: 38px;
+    background: var(--soft);
   }
 
   .mobile-only {
@@ -1131,7 +1463,7 @@ a.date-row:hover {
 
   .hero,
   .hero .container {
-    min-height: 560px;
+    min-height: 600px;
   }
 
   .hero-copy {
@@ -1149,9 +1481,16 @@ a.date-row:hover {
   .update-grid,
   .news-list,
   .stats-grid,
-  .resource-grid,
-  .partner-grid {
+  .resource-grid {
     grid-template-columns: 1fr;
+  }
+
+  .partner-track {
+    gap: 14px;
+  }
+
+  .partner {
+    flex-basis: calc((100% - 14px) / 2);
   }
 
   .gallery-grid {
@@ -1179,6 +1518,10 @@ a.date-row:hover {
 
   .gallery-grid {
     grid-template-columns: 1fr;
+  }
+
+  .partner {
+    flex-basis: 100%;
   }
 
   .footer ul {

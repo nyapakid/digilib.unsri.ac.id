@@ -9,6 +9,17 @@
 </head>
 <body>
     @php($sections = \App\Support\Admin\ContentRegistry::all())
+    @php($navSections = $sections)
+    @if(isset($sections['menus'], $sections['pages']))
+        @php($navSections = [])
+        @foreach($sections as $type => $section)
+            @continue($type === 'pages')
+            @php($navSections[$type] = $section)
+            @if($type === 'menus')
+                @php($navSections['pages'] = $sections['pages'])
+            @endif
+        @endforeach
+    @endif
 
     <div class="admin-shell">
         <aside class="sidebar">
@@ -19,7 +30,7 @@
             <nav class="admin-nav">
                 <a @class(['active' => request()->routeIs('admin.dashboard')]) href="{{ route('admin.dashboard') }}">Dashboard</a>
                 <a @class(['active' => request()->routeIs('admin.settings.*')]) href="{{ route('admin.settings.edit') }}">Pengaturan Situs</a>
-                @foreach ($sections as $type => $section)
+                @foreach ($navSections as $type => $section)
                     <a @class(['active' => request()->route('type') === $type]) href="{{ route('admin.content.index', $type) }}">{{ $section['label'] }}</a>
                 @endforeach
             </nav>

@@ -77,6 +77,12 @@ class DatabaseSeeder extends Seeder
                 'button_text' => 'Telusuri Koleksi',
                 'button_url' => '#resources',
                 'image_url' => 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1800&q=85',
+                'fact_1_title' => 'Terakreditasi A',
+                'fact_1_text' => 'Perpustakaan Nasional RI',
+                'fact_1_icon' => 'award',
+                'fact_2_title' => 'Jam Layanan',
+                'fact_2_text' => 'Senin - Jumat 08.00 - 16.00 WIB',
+                'fact_2_icon' => 'clock',
                 'sort_order' => 1,
             ],
             [
@@ -86,6 +92,12 @@ class DatabaseSeeder extends Seeder
                 'button_text' => 'Buka e-Resources',
                 'button_url' => '#resources',
                 'image_url' => 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=1800&q=85',
+                'fact_1_title' => 'Repository',
+                'fact_1_text' => 'Karya ilmiah Unsri',
+                'fact_1_icon' => 'document',
+                'fact_2_title' => 'Database',
+                'fact_2_text' => 'Sumber elektronik akademik',
+                'fact_2_icon' => 'shield',
                 'sort_order' => 2,
             ],
             [
@@ -95,6 +107,12 @@ class DatabaseSeeder extends Seeder
                 'button_text' => 'Lihat Layanan',
                 'button_url' => '#layanan',
                 'image_url' => 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1800&q=85',
+                'fact_1_title' => 'Referensi',
+                'fact_1_text' => 'Pendampingan pencarian sumber',
+                'fact_1_icon' => 'search',
+                'fact_2_title' => 'Literasi',
+                'fact_2_text' => 'Pelatihan dan konsultasi',
+                'fact_2_icon' => 'book',
                 'sort_order' => 3,
             ],
         ]);
@@ -113,12 +131,12 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->seedOrdered(ResourceLink::class, 'title', [
-            ['title' => 'myUNSRI Library', 'description' => 'Akses akun perpustakaan', 'body' => 'Gunakan layanan myUNSRI Library untuk mengakses akun perpustakaan, memantau peminjaman, dan melihat status layanan yang tersedia bagi sivitas akademika.', 'url' => '#', 'icon' => 'search', 'sort_order' => 1],
-            ['title' => 'Repository', 'description' => 'Karya ilmiah Unsri', 'body' => 'Repository menyimpan karya ilmiah Universitas Sriwijaya seperti skripsi, tesis, disertasi, artikel, dan publikasi akademik lainnya.', 'url' => '#', 'icon' => 'book', 'sort_order' => 2],
-            ['title' => 'Online Catalog', 'description' => 'Penelusuran koleksi', 'body' => 'Online Catalog membantu pengguna menelusuri koleksi perpustakaan, informasi bibliografi, dan status ketersediaan koleksi.', 'url' => '#', 'icon' => 'document', 'sort_order' => 3],
-            ['title' => 'SIneRGIS', 'description' => 'System for Integrated e-Resources & Library Gateway of Sriwijaya', 'body' => 'SIneRGIS menjadi gerbang terpadu untuk mengakses sumber informasi digital dan layanan perpustakaan Universitas Sriwijaya.', 'url' => '#', 'icon' => 'grid', 'sort_order' => 4],
-            ['title' => 'e-Proceeding', 'description' => 'Prosiding konferensi', 'body' => 'e-Proceeding menyediakan akses ke prosiding kegiatan ilmiah, seminar, dan konferensi yang berkaitan dengan Universitas Sriwijaya.', 'url' => '#', 'icon' => 'file', 'sort_order' => 5],
-            ['title' => 'Database', 'description' => 'Basis data langganan', 'body' => 'Database langganan menyediakan akses ke sumber referensi elektronik yang mendukung pembelajaran, penelitian, dan publikasi ilmiah.', 'url' => '#', 'icon' => 'shield', 'sort_order' => 6],
+            ['title' => 'myUNSRI Library', 'description' => 'Akses akun perpustakaan', 'body' => 'Gunakan layanan myUNSRI Library untuk mengakses akun perpustakaan, memantau peminjaman, dan melihat status layanan yang tersedia bagi sivitas akademika.', 'url' => '#', 'icon' => 'search', 'background_color' => '#ffffff', 'sort_order' => 1],
+            ['title' => 'Repository', 'description' => 'Karya ilmiah Unsri', 'body' => 'Repository menyimpan karya ilmiah Universitas Sriwijaya seperti skripsi, tesis, disertasi, artikel, dan publikasi akademik lainnya.', 'url' => '#', 'icon' => 'book', 'background_color' => '#f7fbff', 'sort_order' => 2],
+            ['title' => 'Online Catalog', 'description' => 'Penelusuran koleksi', 'body' => 'Online Catalog membantu pengguna menelusuri koleksi perpustakaan, informasi bibliografi, dan status ketersediaan koleksi.', 'url' => '#', 'icon' => 'document', 'background_color' => '#fffaf0', 'sort_order' => 3],
+            ['title' => 'SIneRGIS', 'description' => 'System for Integrated e-Resources & Library Gateway of Sriwijaya', 'body' => 'SIneRGIS menjadi gerbang terpadu untuk mengakses sumber informasi digital dan layanan perpustakaan Universitas Sriwijaya.', 'url' => '#', 'icon' => 'grid', 'background_color' => '#f7fff9', 'sort_order' => 4],
+            ['title' => 'e-Proceeding', 'description' => 'Prosiding konferensi', 'body' => 'e-Proceeding menyediakan akses ke prosiding kegiatan ilmiah, seminar, dan konferensi yang berkaitan dengan Universitas Sriwijaya.', 'url' => '#', 'icon' => 'file', 'background_color' => '#fff7fb', 'sort_order' => 5],
+            ['title' => 'Database', 'description' => 'Basis data langganan', 'body' => 'Database langganan menyediakan akses ke sumber referensi elektronik yang mendukung pembelajaran, penelitian, dan publikasi ilmiah.', 'url' => '#', 'icon' => 'shield', 'background_color' => '#f8f7ff', 'sort_order' => 6],
         ]);
 
         $this->seedOrdered(Service::class, 'title', [
@@ -149,11 +167,11 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->seedOrdered(Facility::class, 'title', [
-            ['title' => 'Ruang Baca Nyaman', 'description' => 'Area baca ber-AC dengan suasana kondusif untuk belajar.', 'body' => 'Ruang baca disediakan untuk mendukung aktivitas belajar mandiri, diskusi akademik ringan, dan penelusuran koleksi dengan suasana yang kondusif.', 'icon' => 'book', 'sort_order' => 1],
-            ['title' => 'Hotspot Area', 'description' => 'Wi-Fi cepat untuk mendukung akses internet mahasiswa.', 'body' => 'Hotspot area membantu pengguna mengakses katalog, repository, jurnal elektronik, dan sumber pembelajaran digital selama berada di area perpustakaan.', 'icon' => 'wifi', 'sort_order' => 2],
-            ['title' => 'Komputer & Multimedia', 'description' => 'Unit komputer dan perangkat multimedia untuk akses digital.', 'body' => 'Fasilitas komputer dan multimedia dapat digunakan untuk penelusuran informasi, akses sumber digital, serta kebutuhan akademik terkait literasi informasi.', 'icon' => 'computer', 'sort_order' => 3],
-            ['title' => 'OPAC', 'description' => 'Aplikasi penelusuran koleksi dan informasi ketersediaan buku.', 'body' => 'OPAC memudahkan pengguna mencari koleksi berdasarkan judul, penulis, subjek, atau kata kunci dan memeriksa ketersediaan koleksi.', 'icon' => 'document', 'sort_order' => 4],
-            ['title' => 'Loker Penyimpanan', 'description' => 'Tempat penyimpanan barang pengunjung dengan akses aman.', 'body' => 'Loker penyimpanan tersedia untuk membantu pengunjung menyimpan barang bawaan selama menggunakan layanan perpustakaan.', 'icon' => 'lock', 'sort_order' => 5],
+            ['title' => 'Ruang Baca Nyaman', 'description' => 'Area baca ber-AC dengan suasana kondusif untuk belajar.', 'body' => 'Ruang baca disediakan untuk mendukung aktivitas belajar mandiri, diskusi akademik ringan, dan penelusuran koleksi dengan suasana yang kondusif.', 'image_url' => 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=400&q=80', 'icon' => 'book', 'sort_order' => 1],
+            ['title' => 'Hotspot Area', 'description' => 'Wi-Fi cepat untuk mendukung akses internet mahasiswa.', 'body' => 'Hotspot area membantu pengguna mengakses katalog, repository, jurnal elektronik, dan sumber pembelajaran digital selama berada di area perpustakaan.', 'image_url' => 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=400&q=80', 'icon' => 'wifi', 'sort_order' => 2],
+            ['title' => 'Komputer & Multimedia', 'description' => 'Unit komputer dan perangkat multimedia untuk akses digital.', 'body' => 'Fasilitas komputer dan multimedia dapat digunakan untuk penelusuran informasi, akses sumber digital, serta kebutuhan akademik terkait literasi informasi.', 'image_url' => 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=400&q=80', 'icon' => 'computer', 'sort_order' => 3],
+            ['title' => 'OPAC', 'description' => 'Aplikasi penelusuran koleksi dan informasi ketersediaan buku.', 'body' => 'OPAC memudahkan pengguna mencari koleksi berdasarkan judul, penulis, subjek, atau kata kunci dan memeriksa ketersediaan koleksi.', 'image_url' => 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=400&q=80', 'icon' => 'document', 'sort_order' => 4],
+            ['title' => 'Loker Penyimpanan', 'description' => 'Tempat penyimpanan barang pengunjung dengan akses aman.', 'body' => 'Loker penyimpanan tersedia untuk membantu pengunjung menyimpan barang bawaan selama menggunakan layanan perpustakaan.', 'image_url' => 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=400&q=80', 'icon' => 'lock', 'sort_order' => 5],
         ]);
 
         $this->seedOrdered(Announcement::class, 'title', [

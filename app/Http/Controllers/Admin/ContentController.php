@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\MenuItem;
+use App\Models\Page;
 use App\Support\Admin\ContentRegistry;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
@@ -10,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class ContentController extends Controller
@@ -17,8 +20,13 @@ class ContentController extends Controller
     public function index(string $type): View
     {
         $definition = ContentRegistry::get($type);
-        $items = $definition['model']::query()
-            ->orderBy('sort_order')
+        $query = $definition['model']::query();
+
+        if (($definition['model']) === MenuItem::class) {
+            $query->with('parent');
+        }
+
+        $items = $query->orderBy('sort_order')
             ->latest()
             ->paginate(15);
 
@@ -61,9 +69,18 @@ class ContentController extends Controller
     {
         $definition = ContentRegistry::get($type);
         $item = $this->findItem($definition, $id);
+        $oldPageUrl = ($definition['model']) === Page::class ? route('pages.show', $item->slug, false) : null;
         $data = $this->validatedData($request, $definition, $item);
 
         $item->update($data);
+
+        if (($definition['model']) === Page::class) {
+            $newPageUrl = route('pages.show', $item->slug, false);
+
+            if ($oldPageUrl !== $newPageUrl) {
+                MenuItem::query()->where('url', $oldPageUrl)->update(['url' => $newPageUrl]);
+            }
+        }
 
         return redirect()
             ->route('admin.content.index', $type)
@@ -82,7 +99,7 @@ class ContentController extends Controller
 
     private function validatedData(Request $request, array $definition, ?Model $item = null): array
     {
-        if (($definition['model']) === \App\Models\Page::class && ! $request->filled('slug') && $request->filled('title')) {
+        if (($definition['model']) === Page::class && ! $request->filled('slug') && $request->filled('title')) {
             $request->merge(['slug' => Str::slug($request->input('title'))]);
         }
 
@@ -91,6 +108,10 @@ class ContentController extends Controller
         $files = [];
 
         foreach ($definition['fields'] as $field) {
+            if ($field['type'] === 'menu_link') {
+                continue;
+            }
+
             $rules[$field['name']] = $field['rules'];
 
             if ($field['type'] === 'checkbox') {
@@ -102,7 +123,7 @@ class ContentController extends Controller
             }
         }
 
-        if (($definition['model']) === \App\Models\Page::class) {
+        if (($definition['model']) === Page::class) {
             $rules['slug'] = [
                 'nullable',
                 'string',
@@ -112,7 +133,53 @@ class ContentController extends Controller
             ];
         }
 
-        $data = $request->validate($rules);
+        if (($definition['model']) === MenuItem::class) {
+            $rules['link_type'] = ['required', 'in:page,url'];
+            $rules['page_id'] = ['required_if:link_type,page', 'nullable', 'integer', 'exists:pages,id'];
+            $rules['custom_url'] = ['required_if:link_type,url', 'nullable', 'string', 'max:255'];
+        }
+
+        if (($definition['model']) === MenuItem::class && $item?->id) {
+            $rules['parent_id'] = [
+                'nullable',
+                'integer',
+                'exists:menu_items,id',
+                Rule::notIn([$item->id]),
+            ];
+        }
+
+        $data = $request->validate($rules, [
+            'link_type.required' => 'Pilih tujuan menu.',
+            'link_type.in' => 'Pilihan tujuan menu tidak valid.',
+            'page_id.required_if' => 'Pilih halaman yang akan dibuka.',
+            'page_id.exists' => 'Halaman yang dipilih tidak ditemukan.',
+            'custom_url.required_if' => 'Isi URL atau anchor tujuan menu.',
+            'slug.unique' => 'Judul halaman menghasilkan URL yang sudah digunakan. Gunakan judul lain.',
+        ]);
+
+        if (($definition['model']) === MenuItem::class) {
+            if ($data['link_type'] === 'page') {
+                $page = Page::query()->findOrFail($data['page_id']);
+                $data['url'] = route('pages.show', $page->slug, false);
+            } else {
+                $data['url'] = $data['custom_url'];
+            }
+
+            unset($data['link_type'], $data['page_id'], $data['custom_url']);
+            $data['parent_id'] = $data['parent_id'] ?? null;
+
+            if ($data['parent_id'] && ! MenuItem::query()->whereKey($data['parent_id'])->whereNull('parent_id')->exists()) {
+                throw ValidationException::withMessages([
+                    'parent_id' => 'Induk menu harus berupa menu utama.',
+                ]);
+            }
+
+            if ($item?->exists && $data['parent_id'] && $item->children()->exists()) {
+                throw ValidationException::withMessages([
+                    'parent_id' => 'Menu yang sudah memiliki child tidak dapat dijadikan child.',
+                ]);
+            }
+        }
 
         foreach ($checkboxes as $checkbox) {
             $data[$checkbox] = $request->boolean($checkbox);

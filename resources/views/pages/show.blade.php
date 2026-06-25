@@ -5,6 +5,7 @@
 @section('content')
 <main>
     <section class="page-hero">
+        @include('partials.page-hero-image')
         <div class="container">
             <h1>{{ $page->title }}</h1>
             @if($page->excerpt)

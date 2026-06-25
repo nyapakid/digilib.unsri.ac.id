@@ -4,21 +4,30 @@
 <main>
     <section class="hero hero-carousel" id="profil" aria-label="Slide utama">
         @forelse($heroSlides as $slide)
-            <article @class(['hero-slide', 'active' => $loop->first]) style="background: linear-gradient(90deg, rgba(6, 32, 74, 0.96) 0%, rgba(6, 32, 74, 0.88) 37%, rgba(6, 32, 74, 0.18) 65%, rgba(6, 32, 74, 0.04) 100%), url('{{ $slide->image_url }}') center / cover no-repeat;">
+            @php($zoomClass = random_int(0, 1) ? 'hero-zoom-in' : 'hero-zoom-out')
+            <article @class(['hero-slide', $zoomClass, 'active' => $loop->first])>
+                <span class="hero-slide-bg" aria-hidden="true" style="background-image: linear-gradient(90deg, rgba(6, 32, 74, 0.96) 0%, rgba(6, 32, 74, 0.88) 37%, rgba(6, 32, 74, 0.18) 65%, rgba(6, 32, 74, 0.04) 100%), url('{{ $slide->image_url }}'); background-position: center center; background-size: cover; background-repeat: no-repeat;"></span>
+                <canvas class="hero-matrix-canvas" data-hero-matrix aria-hidden="true"></canvas>
                 <div class="container">
                     <div class="hero-copy">
                         <h1>{{ $slide->title }} @if($slide->highlight)<span>{{ $slide->highlight }}</span>@endif</h1>
                         <p>{{ $slide->description }}</p>
-                        <div class="hero-facts">
-                            <div class="hero-fact">
-                                <span class="icon" aria-hidden="true"><x-icon :name="$site->hero_fact_1_icon" :size="23" /></span>
-                                {{ $site->hero_fact_1_title }}<br>{{ $site->hero_fact_1_text }}
+                        @if($slide->fact_1_title || $slide->fact_1_text || $slide->fact_2_title || $slide->fact_2_text)
+                            <div class="hero-facts">
+                                @if($slide->fact_1_title || $slide->fact_1_text)
+                                    <div class="hero-fact">
+                                        <span class="icon" aria-hidden="true"><x-icon :name="$slide->fact_1_icon ?: 'award'" :size="23" /></span>
+                                        {{ $slide->fact_1_title }}<br>{{ $slide->fact_1_text }}
+                                    </div>
+                                @endif
+                                @if($slide->fact_2_title || $slide->fact_2_text)
+                                    <div class="hero-fact">
+                                        <span class="icon" aria-hidden="true"><x-icon :name="$slide->fact_2_icon ?: 'clock'" :size="23" /></span>
+                                        {{ $slide->fact_2_title }}<br>{{ $slide->fact_2_text }}
+                                    </div>
+                                @endif
                             </div>
-                            <div class="hero-fact">
-                                <span class="icon" aria-hidden="true"><x-icon :name="$site->hero_fact_2_icon" :size="23" /></span>
-                                {{ $site->hero_fact_2_title }}<br>{{ $site->hero_fact_2_text }}
-                            </div>
-                        </div>
+                        @endif
                         @if($slide->button_text && $slide->button_url)
                             <a class="btn" href="{{ $slide->button_url }}">{{ $slide->button_text }}
                                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
@@ -28,7 +37,9 @@
                 </div>
             </article>
         @empty
-            <article class="hero-slide active" style="background: linear-gradient(90deg, rgba(6, 32, 74, 0.96) 0%, rgba(6, 32, 74, 0.88) 37%, rgba(6, 32, 74, 0.18) 65%, rgba(6, 32, 74, 0.04) 100%), url('{{ $site->hero_image_url }}') center / cover no-repeat;">
+            <article class="hero-slide hero-zoom-out active">
+                <span class="hero-slide-bg" aria-hidden="true" style="background-image: linear-gradient(90deg, rgba(6, 32, 74, 0.96) 0%, rgba(6, 32, 74, 0.88) 37%, rgba(6, 32, 74, 0.18) 65%, rgba(6, 32, 74, 0.04) 100%), url('{{ $site->hero_image_url }}'); background-position: center center; background-size: cover; background-repeat: no-repeat;"></span>
+                <canvas class="hero-matrix-canvas" data-hero-matrix aria-hidden="true"></canvas>
                 <div class="container">
                     <div class="hero-copy">
                         <h1>{{ $site->hero_title }} <span>{{ $site->hero_highlight }}</span></h1>
@@ -55,7 +66,7 @@
             </div>
             <div class="resource-grid">
                 @foreach ($resources as $resource)
-                    <a class="resource-card" href="{{ route('resources.show', $resource) }}">
+                    <a class="resource-card" href="{{ route('resources.show', $resource) }}" style="--resource-bg: {{ $resource->background_color ?: '#ffffff' }};">
                         <span class="icon"><x-icon :name="$resource->icon" :size="25" /></span>
                         <strong>{{ $resource->title }}</strong><span>{{ $resource->description }}</span>
                     </a>
@@ -115,7 +126,9 @@
                     <article class="staff-card">
                         <a href="{{ route('staff.show', $staff) }}">
                             @if($staff->photo_url)
-                                <img src="{{ $staff->photo_url }}" alt="{{ $staff->name }}">
+                                <span class="staff-photo">
+                                    <img src="{{ $staff->photo_url }}" alt="{{ $staff->name }}">
+                                </span>
                             @endif
                             <div class="staff-body">
                                 <h3>{{ $staff->name }}</h3>
@@ -218,16 +231,22 @@
             <div class="section-head">
                 <h2>Mitra & Database</h2>
             </div>
-            <div class="partner-grid">
-                @foreach ($partners as $partner)
-                    <a class="partner" href="{{ $partner->url }}" target="_blank" rel="noopener">
-                        @if($partner->logo_url)
-                            <img src="{{ $partner->logo_url }}" alt="{{ $partner->name }}">
-                        @else
-                            {{ $partner->name }}
-                        @endif
-                    </a>
-                @endforeach
+            <div class="partner-carousel" data-partner-carousel aria-label="Carousel Mitra dan Database">
+                <div class="partner-viewport">
+                    <div class="partner-track">
+                        @foreach ($partners as $partner)
+                            <a class="partner" href="{{ $partner->url }}" target="_blank" rel="noopener" data-partner-item draggable="false">
+                                @if($partner->logo_url)
+                                    <span class="partner-logo">
+                                        <img src="{{ $partner->logo_url }}" alt="{{ $partner->name }}" draggable="false">
+                                    </span>
+                                @else
+                                    <span class="partner-name">{{ $partner->name }}</span>
+                                @endif
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
             </div>
         </div>
     </section>

@@ -15,44 +15,92 @@
         </div>
     </section>
 
+    @php($imageUrl = data_get($item, 'image_url'))
+    @php($detailBody = data_get($item, $bodyColumn) ?: data_get($item, $excerptColumn))
+    @php($containsHtml = filled($detailBody) && $detailBody !== strip_tags((string) $detailBody))
+    @php($showRelated = in_array($type, ['news', 'services', 'announcements', 'facilities', 'staff'], true))
+
     <section class="page-content">
-        <div class="container narrow">
-            @php($imageUrl = data_get($item, 'image_url'))
+        <div @class([
+            'container',
+            'detail-shell',
+            'detail-shell--single' => !$showRelated || $relatedItems->isEmpty(),
+            'staff-detail-shell' => $type === 'staff',
+        ])>
+            @if($type === 'staff')
+                <article class="staff-detail-card">
+                    <div class="staff-detail-photo">
+                        @if($imageUrl)
+                            <img src="{{ $imageUrl }}" alt="{{ $item->title }}">
+                        @else
+                            <span class="staff-detail-placeholder"><x-icon name="user" :size="52" /></span>
+                        @endif
+                    </div>
 
-            @if($imageUrl)
-                <img class="detail-image" src="{{ $imageUrl }}" alt="{{ $item->title }}">
+                    <div class="staff-detail-copy">
+                        <div class="detail-meta">
+                            @if(data_get($item, 'position'))
+                                <span class="meta-pill">{{ data_get($item, 'position') }}</span>
+                            @endif
+                            <span class="meta-pill">{{ $sectionTitle }}</span>
+                        </div>
+
+                        <div class="detail-body">
+                            @if($containsHtml)
+                                {!! $detailBody !!}
+                            @elseif(filled($detailBody))
+                                {!! nl2br(e($detailBody)) !!}
+                            @else
+                                <p>Informasi detail staff belum tersedia.</p>
+                            @endif
+                        </div>
+
+                        <p><a class="back-link" href="{{ route($type.'.index') }}">Kembali ke {{ $sectionTitle }}</a></p>
+                    </div>
+                </article>
+
+                @includeWhen($showRelated, 'content.partials.related-sidebar')
+            @else
+                <article class="detail-main">
+                    @if($imageUrl)
+                        <div class="detail-image-frame">
+                            <img class="detail-image" src="{{ $imageUrl }}" alt="{{ $item->title }}">
+                        </div>
+                    @endif
+
+                    <div class="detail-meta">
+                        @if(isset($item->published_at) && $item->published_at)
+                            <span class="meta-pill">{{ $item->published_at->translatedFormat('j F Y') }}</span>
+                        @endif
+
+                        @if(isset($item->event_date) && $item->event_date)
+                            <span class="meta-pill">{{ $item->event_date->translatedFormat('j F Y') }}</span>
+                        @endif
+
+                        @if(isset($item->icon) && $item->icon)
+                            <span class="meta-pill"><x-icon :name="$item->icon" :size="16" /> {{ $sectionTitle }}</span>
+                        @endif
+                    </div>
+
+                    <div class="detail-body">
+                        @if($containsHtml)
+                            {!! $detailBody !!}
+                        @elseif(filled($detailBody))
+                            {!! nl2br(e($detailBody)) !!}
+                        @else
+                            <p>Informasi detail belum tersedia.</p>
+                        @endif
+                    </div>
+
+                    @if(isset($item->url) && $item->url && $item->url !== '#')
+                        <p><a class="btn" href="{{ $item->url }}" target="_blank" rel="noopener">Buka Tautan <span aria-hidden="true">&rarr;</span></a></p>
+                    @endif
+
+                    <p><a class="back-link" href="{{ route($type.'.index') }}">Kembali ke {{ $sectionTitle }}</a></p>
+                </article>
+
+                @includeWhen($showRelated, 'content.partials.related-sidebar')
             @endif
-
-            <div class="detail-meta">
-                @if(isset($item->published_at) && $item->published_at)
-                    <span class="meta-pill">{{ $item->published_at->translatedFormat('j F Y') }}</span>
-                @endif
-
-                @if(isset($item->event_date) && $item->event_date)
-                    <span class="meta-pill">{{ $item->event_date->translatedFormat('j F Y') }}</span>
-                @endif
-
-                @if(isset($item->icon) && $item->icon)
-                    <span class="meta-pill"><x-icon :name="$item->icon" :size="16" /> {{ $sectionTitle }}</span>
-                @endif
-            </div>
-
-            @php($detailBody = data_get($item, $bodyColumn) ?: data_get($item, $excerptColumn))
-            @php($containsHtml = $detailBody !== strip_tags((string) $detailBody))
-
-            <div class="detail-body">
-                @if($containsHtml)
-                    {!! $detailBody !!}
-                @else
-                    {!! nl2br(e($detailBody)) !!}
-                @endif
-            </div>
-
-            @if(isset($item->url) && $item->url && $item->url !== '#')
-                <p><a class="btn" href="{{ $item->url }}" target="_blank" rel="noopener">Buka Tautan <span aria-hidden="true">&rarr;</span></a></p>
-            @endif
-
-            <p><a class="back-link" href="{{ route($type.'.index') }}">Kembali ke {{ $sectionTitle }}</a></p>
         </div>
     </section>
 </main>

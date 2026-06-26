@@ -116,6 +116,8 @@ class ContentPageController extends Controller
     {
         abort_unless((bool) $item->is_active, 404);
 
+        $model = $item::class;
+
         return view('content.show', [
             'site' => SiteSetting::current(),
             'menus' => MenuItem::active()->ordered()->get(),
@@ -124,6 +126,7 @@ class ContentPageController extends Controller
             'item' => $item,
             'excerptColumn' => $excerptColumn,
             'bodyColumn' => $bodyColumn,
+            'relatedItems' => $model::active()->ordered()->whereKeyNot($item->getKey())->take(5)->get(),
         ]);
     }
 }

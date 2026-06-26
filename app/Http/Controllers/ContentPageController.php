@@ -13,6 +13,7 @@ use App\Models\Service;
 use App\Models\SiteSetting;
 use App\Models\StaffMember;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class ContentPageController extends Controller
@@ -87,9 +88,37 @@ class ContentPageController extends Controller
         return $this->showView('galleries', 'Galeri', $gallery, 'description', 'description');
     }
 
-    public function staff(): View
+    public function staff(Request $request): View
     {
-        return $this->indexView('staff', 'Staff', StaffMember::class, 'position');
+        $selectedCategory = $request->query('category');
+
+        if (! array_key_exists((string) $selectedCategory, StaffMember::CATEGORIES)) {
+            $selectedCategory = null;
+        }
+
+        $items = StaffMember::active()
+            ->ordered()
+            ->when($selectedCategory, fn ($query) => $query->where('category', $selectedCategory))
+            ->when(! $selectedCategory, fn ($query) => $query->whereRaw('1 = 0'))
+            ->paginate(9)
+            ->withQueryString();
+
+        $categoryCounts = StaffMember::active()
+            ->selectRaw('category, count(*) as total')
+            ->groupBy('category')
+            ->pluck('total', 'category');
+
+        return view('content.index', [
+            'site' => SiteSetting::current(),
+            'menus' => MenuItem::active()->ordered()->get(),
+            'type' => 'staff',
+            'title' => 'Staff',
+            'excerptColumn' => 'position',
+            'items' => $items,
+            'staffCategories' => StaffMember::CATEGORIES,
+            'selectedStaffCategory' => $selectedCategory,
+            'staffCategoryCounts' => $categoryCounts,
+        ]);
     }
 
     public function staffMember(StaffMember $staffMember): View

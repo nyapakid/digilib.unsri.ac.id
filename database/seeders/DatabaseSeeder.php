@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\AgendaItem;
 use App\Models\Announcement;
+use App\Models\Banner;
 use App\Models\Facility;
 use App\Models\GalleryItem;
 use App\Models\HeroSlide;
@@ -40,7 +41,7 @@ class DatabaseSeeder extends Seeder
 
         SiteSetting::query()->updateOrCreate(['id' => 1], [
             'site_name' => 'Digilib Universitas Sriwijaya',
-            'brand_name' => 'SIneRGIS',
+            'brand_name' => 'SIneRGiS',
             'university_name' => 'Universitas Sriwijaya',
             'logo_text' => 'US',
             'logo_path' => '/images/unsri-logo.svg',
@@ -137,6 +138,21 @@ class DatabaseSeeder extends Seeder
             ['title' => 'SIneRGIS', 'description' => 'System for Integrated e-Resources & Library Gateway of Sriwijaya', 'body' => 'SIneRGIS menjadi gerbang terpadu untuk mengakses sumber informasi digital dan layanan perpustakaan Universitas Sriwijaya.', 'url' => '#', 'icon' => 'grid', 'background_color' => '#f7fff9', 'sort_order' => 4],
             ['title' => 'e-Proceeding', 'description' => 'Prosiding konferensi', 'body' => 'e-Proceeding menyediakan akses ke prosiding kegiatan ilmiah, seminar, dan konferensi yang berkaitan dengan Universitas Sriwijaya.', 'url' => '#', 'icon' => 'file', 'background_color' => '#fff7fb', 'sort_order' => 5],
             ['title' => 'Database', 'description' => 'Basis data langganan', 'body' => 'Database langganan menyediakan akses ke sumber referensi elektronik yang mendukung pembelajaran, penelitian, dan publikasi ilmiah.', 'url' => '#', 'icon' => 'shield', 'background_color' => '#f8f7ff', 'sort_order' => 6],
+        ]);
+
+        $this->seedOrdered(Banner::class, 'title', [
+            [
+                'title' => 'Akses e-Resources Terpadu',
+                'image_url' => 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1600&q=85',
+                'image_size' => 'full',
+                'sort_order' => 1,
+            ],
+            [
+                'title' => 'Layanan Digital Perpustakaan',
+                'image_url' => 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=1100&q=85',
+                'image_size' => 'original',
+                'sort_order' => 2,
+            ],
         ]);
 
         $this->seedOrdered(Service::class, 'title', [
@@ -239,6 +255,7 @@ class DatabaseSeeder extends Seeder
         $this->seedOrdered(StaffMember::class, 'name', [
             [
                 'name' => 'Dr. Rina Marlina',
+                'category' => 'pustakawan',
                 'position' => 'Kepala Layanan Digilib',
                 'photo_url' => '/images/staff/staff-1.svg',
                 'bio' => 'Mengkoordinasikan pengembangan layanan digital, literasi informasi, dan akses sumber elektronik untuk sivitas akademika Universitas Sriwijaya.',
@@ -246,6 +263,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Andi Saputra, S.IP.',
+                'category' => 'pustakawan',
                 'position' => 'Pustakawan Referensi',
                 'photo_url' => '/images/staff/staff-2.svg',
                 'bio' => 'Mendampingi penelusuran referensi akademik, penggunaan katalog, repository, dan database ilmiah.',
@@ -253,6 +271,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Maya Lestari, M.Kom.',
+                'category' => 'administrasi',
                 'position' => 'Pengelola Sistem Digital',
                 'photo_url' => '/images/staff/staff-3.svg',
                 'bio' => 'Mengelola sistem informasi perpustakaan, unggah konten digital, dan integrasi akses layanan daring.',
@@ -260,6 +279,7 @@ class DatabaseSeeder extends Seeder
             ],
             [
                 'name' => 'Budi Hartono',
+                'category' => 'administrasi',
                 'position' => 'Layanan Sirkulasi',
                 'photo_url' => '/images/staff/staff-4.svg',
                 'bio' => 'Melayani administrasi peminjaman, pengembalian, dan informasi ketersediaan koleksi perpustakaan.',

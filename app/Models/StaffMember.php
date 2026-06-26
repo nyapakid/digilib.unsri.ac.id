@@ -10,6 +10,11 @@ class StaffMember extends Model
 {
     use PublishesContent;
 
+    public const CATEGORIES = [
+        'pustakawan' => 'Pustakawan',
+        'administrasi' => 'Administrasi',
+    ];
+
     protected $guarded = [];
 
     protected function casts(): array
@@ -25,5 +30,10 @@ class StaffMember extends Model
     protected function imageUrl(): Attribute
     {
         return Attribute::get(fn () => $this->photo_url);
+    }
+
+    protected function categoryLabel(): Attribute
+    {
+        return Attribute::get(fn () => self::CATEGORIES[$this->category] ?? $this->category);
     }
 }

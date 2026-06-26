@@ -148,7 +148,6 @@ img {
   color: var(--navy);
   font-size: 31px;
   line-height: 1;
-  text-transform: uppercase;
   letter-spacing: 0;
 }
 
@@ -546,6 +545,58 @@ section {
   line-height: 1.35;
 }
 
+.banner-section {
+  padding: 0 0 54px;
+  background: var(--white);
+}
+
+.banner-stack {
+  display: grid;
+  gap: 18px;
+}
+
+.banner-item {
+  position: relative;
+  display: grid;
+  min-height: clamp(340px, 34vw, 520px);
+  overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: var(--soft);
+  box-shadow: none;
+  isolation: isolate;
+}
+
+.banner-item::after {
+  content: none;
+}
+
+.banner-item img {
+  width: 100%;
+  height: clamp(340px, 34vw, 520px);
+  object-fit: cover;
+  object-position: center center;
+}
+
+.banner-item--original {
+  width: min(1180px, calc(100% - 40px));
+  min-height: auto;
+  margin-inline: auto;
+  place-items: center;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 12px 28px rgba(6, 32, 74, 0.08);
+}
+
+.banner-item--original img {
+  width: auto;
+  height: auto;
+  min-height: 0;
+  max-height: 520px;
+  object-fit: contain;
+}
+
 .two-columns {
   display: grid;
   grid-template-columns: 1.18fr 0.82fr;
@@ -590,10 +641,11 @@ section {
 .facility-thumb img,
 .staff-card img,
 .content-card img,
-.partner img,
-.detail-image,
-.related-thumb img,
-.staff-detail-photo img {
+  .partner img,
+  .banner-item img,
+  .detail-image,
+  .related-thumb img,
+  .staff-detail-photo img {
   transition: transform 0.42s ease, filter 0.42s ease;
   will-change: transform;
 }
@@ -603,12 +655,13 @@ section {
 .gallery-card:hover img,
 .facility-item:hover .facility-thumb img,
 .staff-card:hover img,
-.content-card:hover img,
-.partner:hover img,
-.detail-image:hover,
-.detail-image-frame:hover .detail-image,
-.related-card:hover .related-thumb img,
-.staff-detail-photo:hover img {
+  .content-card:hover img,
+  .partner:hover img,
+  .banner-item:hover img,
+  .detail-image:hover,
+  .detail-image-frame:hover .detail-image,
+  .related-card:hover .related-thumb img,
+  .staff-detail-photo:hover img {
   transform: scale(1.08);
 }
 
@@ -903,6 +956,7 @@ a.date-row:hover {
   .staff-card img,
   .content-card img,
   .partner img,
+  .banner-item img,
   .detail-image,
   .related-thumb img,
   .staff-detail-photo img {
@@ -916,6 +970,7 @@ a.date-row:hover {
   .staff-card:hover img,
   .content-card:hover img,
   .partner:hover img,
+  .banner-item:hover img,
   .detail-image:hover,
   .detail-image-frame:hover .detail-image,
   .related-card:hover .related-thumb img,
@@ -1188,6 +1243,76 @@ a.date-row:hover {
   margin: 0 0 16px;
   color: var(--muted);
   font-size: 14px;
+}
+
+.staff-category-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.staff-category-card {
+  display: grid;
+  min-height: 180px;
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--white);
+  box-shadow: 0 12px 28px rgba(6, 32, 74, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.staff-category-card:hover {
+  border-color: var(--yellow);
+  box-shadow: var(--shadow);
+  transform: translateY(-3px);
+}
+
+.staff-category-card .icon {
+  width: 54px;
+  height: 54px;
+  margin-bottom: 18px;
+  border-radius: 50%;
+  background: #fff7d1;
+  color: var(--navy);
+}
+
+.staff-category-card strong {
+  color: var(--navy);
+  font-size: 25px;
+  line-height: 1.2;
+}
+
+.staff-category-card span:not(.icon) {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.staff-category-nav {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.staff-category-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 15px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--navy);
+  background: var(--white);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.staff-category-nav a.active,
+.staff-category-nav a:hover {
+  border-color: var(--yellow);
+  background: var(--yellow);
 }
 
 .detail-meta {
@@ -1638,6 +1763,7 @@ a.date-row:hover {
 
   .hero-facts,
   .content-grid,
+  .staff-category-grid,
   .service-grid,
   .staff-grid,
   .update-grid,
@@ -1645,6 +1771,26 @@ a.date-row:hover {
   .stats-grid,
   .resource-grid {
     grid-template-columns: 1fr;
+  }
+
+  .banner-section {
+    padding: 0 0 42px;
+  }
+
+  .banner-item {
+    min-height: 260px;
+  }
+
+  .banner-item img {
+    height: 260px;
+  }
+
+  .banner-item--original {
+    padding: 12px;
+  }
+
+  .banner-item--original img {
+    height: auto;
   }
 
   .partner-track {

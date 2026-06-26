@@ -15,47 +15,69 @@
 
     <section class="page-content">
         <div class="container">
-            <div class="content-grid">
-                @forelse($items as $item)
-                    @php($imageUrl = data_get($item, 'image_url'))
-                    <article class="content-card" @if($type === 'resources' && data_get($item, 'background_color')) style="--resource-bg: {{ data_get($item, 'background_color') }};" @endif>
-                        @if($imageUrl)
-                            <a href="{{ route($type.'.show', $item) }}">
-                                <img src="{{ $imageUrl }}" alt="{{ $item->title }}">
-                            </a>
-                        @elseif(isset($item->icon) && $item->icon)
-                            <a class="content-icon" href="{{ route($type.'.show', $item) }}">
-                                <x-icon :name="$item->icon" :size="30" />
-                            </a>
-                        @endif
-
-                        <div class="content-card-body">
-                            @if(isset($item->published_at) && $item->published_at)
-                                <time>{{ $item->published_at->translatedFormat('j F Y') }}</time>
-                            @elseif(isset($item->event_date) && $item->event_date)
-                                <time>{{ $item->event_date->translatedFormat('j F Y') }}</time>
-                            @endif
-
-                            <h2><a href="{{ route($type.'.show', $item) }}">{{ $item->title }}</a></h2>
-
-                            @if(data_get($item, $excerptColumn))
-                                <p>{{ data_get($item, $excerptColumn) }}</p>
-                            @endif
-
-                            <a class="small-btn" href="{{ route($type.'.show', $item) }}">Selengkapnya <span aria-hidden="true">&rarr;</span></a>
-                        </div>
-                    </article>
-                @empty
-                    <div class="empty-content">
-                        <h2>Belum ada data</h2>
-                        <p>Konten akan tampil di halaman ini setelah ditambahkan dari backend.</p>
+            @if($type === 'staff' && blank($selectedStaffCategory))
+                <div class="staff-category-grid">
+                    @foreach($staffCategories as $categoryValue => $categoryLabel)
+                        <a class="staff-category-card" href="{{ route('staff.index', ['category' => $categoryValue]) }}">
+                            <span class="icon" aria-hidden="true"><x-icon name="user" :size="30" /></span>
+                            <strong>{{ $categoryLabel }}</strong>
+                            <span>{{ (int) ($staffCategoryCounts[$categoryValue] ?? 0) }} staff</span>
+                        </a>
+                    @endforeach
+                </div>
+            @else
+                @if($type === 'staff')
+                    <div class="staff-category-nav">
+                        @foreach($staffCategories as $categoryValue => $categoryLabel)
+                            <a @class(['active' => $selectedStaffCategory === $categoryValue]) href="{{ route('staff.index', ['category' => $categoryValue]) }}">{{ $categoryLabel }}</a>
+                        @endforeach
                     </div>
-                @endforelse
-            </div>
+                @endif
 
-            <div class="pagination-wrap">
-                {{ $items->links() }}
-            </div>
+                <div class="content-grid">
+                    @forelse($items as $item)
+                        @php($imageUrl = data_get($item, 'image_url'))
+                        <article class="content-card" @if($type === 'resources' && data_get($item, 'background_color')) style="--resource-bg: {{ data_get($item, 'background_color') }};" @endif>
+                            @if($imageUrl)
+                                <a href="{{ route($type.'.show', $item) }}">
+                                    <img src="{{ $imageUrl }}" alt="{{ $item->title }}">
+                                </a>
+                            @elseif(isset($item->icon) && $item->icon)
+                                <a class="content-icon" href="{{ route($type.'.show', $item) }}">
+                                    <x-icon :name="$item->icon" :size="30" />
+                                </a>
+                            @endif
+
+                            <div class="content-card-body">
+                                @if(isset($item->published_at) && $item->published_at)
+                                    <time>{{ $item->published_at->translatedFormat('j F Y') }}</time>
+                                @elseif(isset($item->event_date) && $item->event_date)
+                                    <time>{{ $item->event_date->translatedFormat('j F Y') }}</time>
+                                @elseif($type === 'staff' && data_get($item, 'category_label'))
+                                    <time>{{ data_get($item, 'category_label') }}</time>
+                                @endif
+
+                                <h2><a href="{{ route($type.'.show', $item) }}">{{ $item->title }}</a></h2>
+
+                                @if(data_get($item, $excerptColumn))
+                                    <p>{{ data_get($item, $excerptColumn) }}</p>
+                                @endif
+
+                                <a class="small-btn" href="{{ route($type.'.show', $item) }}">Selengkapnya <span aria-hidden="true">&rarr;</span></a>
+                            </div>
+                        </article>
+                    @empty
+                        <div class="empty-content">
+                            <h2>Belum ada data</h2>
+                            <p>Konten akan tampil di halaman ini setelah ditambahkan dari backend.</p>
+                        </div>
+                    @endforelse
+                </div>
+
+                <div class="pagination-wrap">
+                    {{ $items->links() }}
+                </div>
+            @endif
         </div>
     </section>
 </main>

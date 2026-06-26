@@ -4,6 +4,7 @@ namespace App\Support\Admin;
 
 use App\Models\AgendaItem;
 use App\Models\Announcement;
+use App\Models\Banner;
 use App\Models\Facility;
 use App\Models\GalleryItem;
 use App\Models\HeroSlide;
@@ -48,6 +49,22 @@ class ContentRegistry
                     self::field('url', 'URL', 'text', 'required|string|max:255'),
                     self::field('icon', 'Ikon', 'select', 'required|string|max:50', self::icons()),
                     self::field('background_color', 'Warna Background', 'color', 'nullable|string|regex:/^#[0-9A-Fa-f]{6}$/'),
+                    self::field('sort_order', 'Urutan', 'number', 'required|integer|min:0'),
+                    self::field('is_active', 'Aktif', 'checkbox', 'boolean'),
+                ],
+            ],
+            'banners' => [
+                'label' => 'Banner',
+                'singular' => 'Banner',
+                'model' => Banner::class,
+                'title' => 'title',
+                'fields' => [
+                    self::field('title', 'Judul', 'text', 'required|string|max:255'),
+                    self::field('image_url', 'Upload Gambar Banner', 'file', 'nullable|image|max:4096'),
+                    self::field('image_size', 'Ukuran Gambar', 'select', 'required|string|in:full,original', [
+                        'full' => 'Full Lebar',
+                        'original' => 'Ukuran Asli',
+                    ]),
                     self::field('sort_order', 'Urutan', 'number', 'required|integer|min:0'),
                     self::field('is_active', 'Aktif', 'checkbox', 'boolean'),
                 ],
@@ -168,6 +185,7 @@ class ContentRegistry
                 'title' => 'name',
                 'fields' => [
                     self::field('name', 'Nama Staff', 'text', 'required|string|max:255'),
+                    self::field('category', 'Kategori Staff', 'select', 'required|string|in:pustakawan,administrasi', StaffMember::CATEGORIES),
                     self::field('position', 'Jabatan', 'text', 'nullable|string|max:255'),
                     self::field('photo_url', 'Upload Foto', 'file', 'nullable|image|max:4096'),
                     self::field('bio', 'Profil Singkat', 'textarea', 'nullable|string'),

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AgendaItem;
 use App\Models\Announcement;
+use App\Models\Banner;
 use App\Models\Facility;
 use App\Models\GalleryItem;
 use App\Models\HeroSlide;
@@ -26,6 +27,7 @@ class HomeController extends Controller
             'menus' => MenuItem::active()->ordered()->get(),
             'heroSlides' => HeroSlide::active()->ordered()->get(),
             'resources' => ResourceLink::active()->ordered()->get(),
+            'banners' => Banner::active()->ordered()->get(),
             'services' => Service::active()->ordered()->take(3)->get(),
             'facilities' => Facility::active()->ordered()->take(6)->get(),
             'staffMembers' => StaffMember::active()->ordered()->take(4)->get(),

@@ -75,6 +75,24 @@
         </div>
     </section>
 
+    @if($banners->isNotEmpty())
+        <section class="banner-section" id="banner" aria-label="Banner">
+            <div class="banner-stack">
+                @foreach($banners as $banner)
+                    <article @class([
+                        'banner-item',
+                        'banner-item--full' => $banner->image_size === 'full',
+                        'banner-item--original' => $banner->image_size === 'original',
+                    ])>
+                        @if($banner->image_url)
+                            <img src="{{ $banner->image_url }}" alt="{{ $banner->title }}">
+                        @endif
+                    </article>
+                @endforeach
+            </div>
+        </section>
+    @endif
+
     <section id="layanan">
         <div class="container two-columns">
             <div>

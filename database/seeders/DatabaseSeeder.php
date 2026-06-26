@@ -7,6 +7,7 @@ use App\Models\Announcement;
 use App\Models\Banner;
 use App\Models\Facility;
 use App\Models\GalleryItem;
+use App\Models\GalleryPhoto;
 use App\Models\HeroSlide;
 use App\Models\MenuItem;
 use App\Models\NewsPost;
@@ -230,10 +231,29 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->seedOrdered(GalleryItem::class, 'title', [
-            ['title' => 'Rak buku perpustakaan', 'description' => 'Koleksi cetak yang tersedia di ruang perpustakaan.', 'image_url' => 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=700&q=80', 'url' => '#', 'sort_order' => 1],
-            ['title' => 'Interior perpustakaan', 'description' => 'Suasana interior ruang perpustakaan untuk aktivitas akademik.', 'image_url' => 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=700&q=80', 'url' => '#', 'sort_order' => 2],
-            ['title' => 'Ruang belajar', 'description' => 'Area belajar yang mendukung kegiatan membaca dan diskusi.', 'image_url' => 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=700&q=80', 'url' => '#', 'sort_order' => 3],
-            ['title' => 'Mahasiswa di komputer', 'description' => 'Fasilitas komputer untuk akses informasi digital.', 'image_url' => 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=700&q=80', 'url' => '#', 'sort_order' => 4],
+            ['title' => 'Kegiatan Akreditasi Perpustakaan', 'description' => 'Dokumentasi kegiatan akreditasi perpustakaan.', 'published_at' => '2026-06-12', 'image_url' => 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=700&q=80', 'url' => '#', 'sort_order' => 1],
+            ['title' => 'Kunjungan Mahasiswa Baru', 'description' => 'Dokumentasi kunjungan mahasiswa baru ke layanan Digilib.', 'published_at' => '2026-06-15', 'image_url' => 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=700&q=80', 'url' => '#', 'sort_order' => 2],
+            ['title' => 'Workshop Literasi Informasi', 'description' => 'Dokumentasi workshop literasi informasi untuk sivitas akademika.', 'published_at' => '2026-06-18', 'image_url' => 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=700&q=80', 'url' => '#', 'sort_order' => 3],
+            ['title' => 'Pelatihan Akses e-Resources', 'description' => 'Dokumentasi pelatihan akses sumber elektronik.', 'published_at' => '2026-06-21', 'image_url' => 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=700&q=80', 'url' => '#', 'sort_order' => 4],
+        ]);
+
+        $this->seedGalleryPhotos([
+            'Kegiatan Akreditasi Perpustakaan' => [
+                ['image_url' => 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=700&q=80', 'description' => 'Persiapan dokumen dan koleksi pendukung akreditasi.', 'is_cover' => true],
+                ['image_url' => 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=700&q=80', 'description' => 'Peninjauan area layanan dan koleksi perpustakaan.'],
+            ],
+            'Kunjungan Mahasiswa Baru' => [
+                ['image_url' => 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=700&q=80', 'description' => 'Pengenalan ruang layanan perpustakaan.', 'is_cover' => true],
+                ['image_url' => 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=700&q=80', 'description' => 'Sesi orientasi akses katalog dan repository.'],
+            ],
+            'Workshop Literasi Informasi' => [
+                ['image_url' => 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=700&q=80', 'description' => 'Ruang diskusi workshop literasi informasi.', 'is_cover' => true],
+                ['image_url' => 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=700&q=80', 'description' => 'Peserta mengikuti praktik penelusuran referensi.'],
+            ],
+            'Pelatihan Akses e-Resources' => [
+                ['image_url' => 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=700&q=80', 'description' => 'Praktik penggunaan sumber elektronik.', 'is_cover' => true],
+                ['image_url' => 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=700&q=80', 'description' => 'Pendampingan akses database langganan.'],
+            ],
         ]);
 
         $this->seedOrdered(Statistic::class, 'label', [
@@ -325,6 +345,48 @@ class DatabaseSeeder extends Seeder
                 [$identityColumn => $record[$identityColumn]],
                 $record
             );
+        }
+    }
+
+    /**
+     * @param  array<string, array<int, array<string, mixed>>>  $albums
+     */
+    private function seedGalleryPhotos(array $albums): void
+    {
+        foreach ($albums as $galleryTitle => $photos) {
+            $gallery = GalleryItem::query()->where('title', $galleryTitle)->first();
+
+            if (! $gallery) {
+                continue;
+            }
+
+            $cover = null;
+
+            foreach ($photos as $index => $photo) {
+                $galleryPhoto = GalleryPhoto::query()->updateOrCreate(
+                    [
+                        'gallery_item_id' => $gallery->id,
+                        'image_url' => $photo['image_url'],
+                    ],
+                    [
+                        'description' => $photo['description'] ?? null,
+                        'sort_order' => $index + 1,
+                        'is_cover' => (bool) ($photo['is_cover'] ?? false),
+                    ]
+                );
+
+                if ($galleryPhoto->is_cover) {
+                    $cover = $galleryPhoto;
+                }
+            }
+
+            $cover ??= $gallery->photos()->first();
+
+            if ($cover) {
+                $gallery->photos()->whereKeyNot($cover->id)->update(['is_cover' => false]);
+                $cover->forceFill(['is_cover' => true])->save();
+                $gallery->update(['image_url' => $cover->image_url, 'url' => '#']);
+            }
         }
     }
 }

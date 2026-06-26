@@ -9,7 +9,7 @@
         <div class="container">
             <p class="crumb"><a href="{{ route('home') }}">Beranda</a> / <a href="{{ route($type.'.index') }}">{{ $sectionTitle }}</a></p>
             <h1>{{ $item->title }}</h1>
-            @if(data_get($item, $excerptColumn))
+            @if($type !== 'galleries' && data_get($item, $excerptColumn))
                 <p>{{ data_get($item, $excerptColumn) }}</p>
             @endif
         </div>
@@ -27,7 +27,36 @@
             'detail-shell--single' => !$showRelated || $relatedItems->isEmpty(),
             'staff-detail-shell' => $type === 'staff',
         ])>
-            @if($type === 'staff')
+            @if($type === 'galleries')
+                <article class="gallery-detail">
+                    <div class="detail-meta">
+                        @if(isset($item->published_at) && $item->published_at)
+                            <span class="meta-pill">{{ $item->published_at->translatedFormat('j F Y') }}</span>
+                        @endif
+                        <span class="meta-pill">{{ $item->photos->count() }} foto</span>
+                    </div>
+
+                    <div class="gallery-detail-grid">
+                        @forelse($item->photos as $photo)
+                            <figure class="gallery-photo-card">
+                                <div class="gallery-photo-frame">
+                                    <img src="{{ $photo->image_url }}" alt="{{ $photo->description ?: $item->title }}">
+                                </div>
+                                @if($photo->description)
+                                    <figcaption>{{ $photo->description }}</figcaption>
+                                @endif
+                            </figure>
+                        @empty
+                            <div class="empty-content">
+                                <h2>Belum ada foto</h2>
+                                <p>Foto kegiatan akan tampil setelah ditambahkan dari backend.</p>
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <p><a class="back-link" href="{{ route($type.'.index') }}">Kembali ke {{ $sectionTitle }}</a></p>
+                </article>
+            @elseif($type === 'staff')
                 <article class="staff-detail-card">
                     <div class="staff-detail-photo">
                         @if($imageUrl)

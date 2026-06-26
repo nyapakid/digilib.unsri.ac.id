@@ -38,7 +38,20 @@
                     @forelse($items as $item)
                         @php($imageUrl = data_get($item, 'image_url'))
                         <article class="content-card" @if($type === 'resources' && data_get($item, 'background_color')) style="--resource-bg: {{ data_get($item, 'background_color') }};" @endif>
-                            @if($imageUrl)
+                            @if($type === 'galleries')
+                                <div class="content-card-body gallery-card-heading">
+                                    @if(isset($item->published_at) && $item->published_at)
+                                        <time>{{ $item->published_at->translatedFormat('j F Y') }}</time>
+                                    @endif
+                                    <h2><a href="{{ route($type.'.show', $item) }}">{{ $item->title }}</a></h2>
+                                </div>
+
+                                @if($imageUrl)
+                                    <a class="gallery-cover-link" href="{{ route($type.'.show', $item) }}">
+                                        <img src="{{ $imageUrl }}" alt="{{ $item->title }}">
+                                    </a>
+                                @endif
+                            @elseif($imageUrl)
                                 <a href="{{ route($type.'.show', $item) }}">
                                     <img src="{{ $imageUrl }}" alt="{{ $item->title }}">
                                 </a>
@@ -48,23 +61,25 @@
                                 </a>
                             @endif
 
-                            <div class="content-card-body">
-                                @if(isset($item->published_at) && $item->published_at)
-                                    <time>{{ $item->published_at->translatedFormat('j F Y') }}</time>
-                                @elseif(isset($item->event_date) && $item->event_date)
-                                    <time>{{ $item->event_date->translatedFormat('j F Y') }}</time>
-                                @elseif($type === 'staff' && data_get($item, 'category_label'))
-                                    <time>{{ data_get($item, 'category_label') }}</time>
-                                @endif
+                            @if($type !== 'galleries')
+                                <div class="content-card-body">
+                                    @if(isset($item->published_at) && $item->published_at)
+                                        <time>{{ $item->published_at->translatedFormat('j F Y') }}</time>
+                                    @elseif(isset($item->event_date) && $item->event_date)
+                                        <time>{{ $item->event_date->translatedFormat('j F Y') }}</time>
+                                    @elseif($type === 'staff' && data_get($item, 'category_label'))
+                                        <time>{{ data_get($item, 'category_label') }}</time>
+                                    @endif
 
-                                <h2><a href="{{ route($type.'.show', $item) }}">{{ $item->title }}</a></h2>
+                                    <h2><a href="{{ route($type.'.show', $item) }}">{{ $item->title }}</a></h2>
 
-                                @if(data_get($item, $excerptColumn))
-                                    <p>{{ data_get($item, $excerptColumn) }}</p>
-                                @endif
+                                    @if(data_get($item, $excerptColumn))
+                                        <p>{{ data_get($item, $excerptColumn) }}</p>
+                                    @endif
 
-                                <a class="small-btn" href="{{ route($type.'.show', $item) }}">Selengkapnya <span aria-hidden="true">&rarr;</span></a>
-                            </div>
+                                    <a class="small-btn" href="{{ route($type.'.show', $item) }}">Selengkapnya <span aria-hidden="true">&rarr;</span></a>
+                                </div>
+                            @endif
                         </article>
                     @empty
                         <div class="empty-content">

@@ -29,10 +29,13 @@
                         <tr>
                             <td>
                                 <strong>{{ data_get($item, $definition['title']) }}</strong>
-                                @if(isset($item->url))
+                                @if(isset($item->url) && $type !== 'galleries')
                                     <small>{{ $item->url }}</small>
                                 @elseif(isset($item->slug))
                                     <small>/halaman/{{ $item->slug }}</small>
+                                @endif
+                                @if($type === 'galleries')
+                                    <small>{{ optional($item->published_at)->format('d/m/Y') ?: 'Tanpa tanggal' }}</small>
                                 @endif
                                 @if($type === 'menus' && $item->parent)
                                     <small>Child dari: {{ $item->parent->label }}</small>

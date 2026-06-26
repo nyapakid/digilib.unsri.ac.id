@@ -226,7 +226,10 @@
                 </div>
                 <div class="gallery-grid">
                     @foreach ($galleryItems as $gallery)
-                        <a class="gallery-card" href="{{ route('galleries.show', $gallery) }}"><img src="{{ $gallery->image_url }}" alt="{{ $gallery->title }}"></a>
+                        <a class="gallery-card" href="{{ route('galleries.show', $gallery) }}">
+                            <span class="gallery-card-title">{{ $gallery->title }}</span>
+                            <img src="{{ $gallery->image_url }}" alt="{{ $gallery->title }}">
+                        </a>
                     @endforeach
                 </div>
             </div>

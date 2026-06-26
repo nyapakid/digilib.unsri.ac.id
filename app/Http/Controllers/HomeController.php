@@ -34,7 +34,7 @@ class HomeController extends Controller
             'announcements' => Announcement::active()->ordered()->take(3)->get(),
             'agendaItems' => AgendaItem::active()->ordered()->take(3)->get(),
             'newsPosts' => NewsPost::active()->ordered()->take(3)->get(),
-            'galleryItems' => GalleryItem::active()->ordered()->take(4)->get(),
+            'galleryItems' => GalleryItem::with('coverPhoto')->active()->ordered()->take(4)->get(),
             'statistics' => Statistic::active()->ordered()->take(4)->get(),
             'partners' => Partner::active()->ordered()->get(),
         ]);

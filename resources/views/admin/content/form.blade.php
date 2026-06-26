@@ -3,6 +3,7 @@
 @php($isEdit = $item->exists)
 @php($hasSummernote = collect($definition['fields'])->contains(fn (array $field) => $field['type'] === 'summernote'))
 @php($hasMenuLink = collect($definition['fields'])->contains(fn (array $field) => $field['type'] === 'menu_link'))
+@php($hasGalleryPhotos = $type === 'galleries')
 
 @if($hasSummernote)
     @push('styles')
@@ -67,6 +68,48 @@
                 document.addEventListener("DOMContentLoaded", initMenuLinkFields);
             } else {
                 initMenuLinkFields();
+            }
+        </script>
+    @endpush
+@endif
+
+@if($hasGalleryPhotos)
+    @push('scripts')
+        <script>
+            function initGalleryPhotoManager() {
+                document.querySelectorAll("[data-gallery-photo-manager]").forEach(function (manager) {
+                    var list = manager.querySelector("[data-gallery-photo-list]");
+                    var template = manager.querySelector("[data-gallery-photo-template]");
+                    var addButton = manager.querySelector("[data-add-gallery-photo]");
+                    var nextIndex = Number(manager.dataset.nextIndex || 1);
+
+                    if (!list || !template || !addButton) {
+                        return;
+                    }
+
+                    addButton.addEventListener("click", function () {
+                        var html = template.innerHTML.replaceAll("__INDEX__", String(nextIndex));
+                        var wrapper = document.createElement("div");
+                        wrapper.innerHTML = html.trim();
+                        list.appendChild(wrapper.firstElementChild);
+                        nextIndex += 1;
+                        manager.dataset.nextIndex = String(nextIndex);
+                    });
+
+                    list.addEventListener("click", function (event) {
+                        var button = event.target.closest("[data-remove-new-photo]");
+
+                        if (button) {
+                            button.closest(".gallery-photo-row")?.remove();
+                        }
+                    });
+                });
+            }
+
+            if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", initGalleryPhotoManager);
+            } else {
+                initGalleryPhotoManager();
             }
         </script>
     @endpush
@@ -174,6 +217,92 @@
                         </label>
                     @endif
                 @endforeach
+
+                @if($hasGalleryPhotos)
+                    @php($oldCover = old('cover_photo'))
+                    @php($existingPhotos = $item->relationLoaded('photos') ? $item->photos : collect())
+                    @php($newPhotoDescriptions = old('new_photo_descriptions', ['']))
+                    @php($nextPhotoIndex = max(1, count($newPhotoDescriptions)))
+
+                    <div class="field-group full gallery-photo-manager" data-gallery-photo-manager data-next-index="{{ $nextPhotoIndex }}">
+                        <div>
+                            <span class="field-label">Foto Galeri</span>
+                            <small class="field-help">Tambahkan foto kegiatan sebanyak mungkin, isi deskripsi foto, lalu pilih salah satu sebagai foto cover.</small>
+                        </div>
+
+                        @if($existingPhotos->isNotEmpty())
+                            <div class="gallery-photo-list existing">
+                                @foreach($existingPhotos as $photo)
+                                    @php($existingToken = 'existing-'.$photo->id)
+                                    <div class="gallery-photo-row">
+                                        <img src="{{ $photo->image_url }}" alt="{{ $item->title }}">
+                                        <div class="gallery-photo-fields">
+                                            <label class="radio-row cover-choice">
+                                                <input type="radio" name="cover_photo" value="{{ $existingToken }}" @checked($oldCover ? $oldCover === $existingToken : $photo->is_cover)>
+                                                Foto cover
+                                            </label>
+                                            <label>
+                                                Deskripsi Foto
+                                                <input type="text" name="existing_photo_descriptions[{{ $photo->id }}]" value="{{ old('existing_photo_descriptions.'.$photo->id, $photo->description) }}" placeholder="Contoh: Suasana kegiatan akreditasi">
+                                            </label>
+                                            <label class="checkbox-row remove-photo">
+                                                <input type="checkbox" name="remove_photo_ids[]" value="{{ $photo->id }}" @checked(in_array($photo->id, old('remove_photo_ids', [])))>
+                                                Hapus foto ini
+                                            </label>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        <div class="gallery-photo-list" data-gallery-photo-list>
+                            @foreach($newPhotoDescriptions as $index => $description)
+                                @php($newToken = 'new-'.$index)
+                                <div class="gallery-photo-row new">
+                                    <div class="new-photo-placeholder">Foto Baru</div>
+                                    <div class="gallery-photo-fields">
+                                        <label class="radio-row cover-choice">
+                                            <input type="radio" name="cover_photo" value="{{ $newToken }}" @checked($oldCover ? $oldCover === $newToken : (! $isEdit && $loop->first))>
+                                            Jadikan cover
+                                        </label>
+                                        <label>
+                                            Upload Foto
+                                            <input type="file" name="new_photos[{{ $index }}]" accept="image/*">
+                                        </label>
+                                        <label>
+                                            Deskripsi Foto
+                                            <input type="text" name="new_photo_descriptions[{{ $index }}]" value="{{ $description }}" placeholder="Deskripsi singkat foto">
+                                        </label>
+                                        <button class="ghost-btn danger" type="button" data-remove-new-photo>Hapus Baris</button>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <template data-gallery-photo-template>
+                            <div class="gallery-photo-row new">
+                                <div class="new-photo-placeholder">Foto Baru</div>
+                                <div class="gallery-photo-fields">
+                                    <label class="radio-row cover-choice">
+                                        <input type="radio" name="cover_photo" value="new-__INDEX__">
+                                        Jadikan cover
+                                    </label>
+                                    <label>
+                                        Upload Foto
+                                        <input type="file" name="new_photos[__INDEX__]" accept="image/*">
+                                    </label>
+                                    <label>
+                                        Deskripsi Foto
+                                        <input type="text" name="new_photo_descriptions[__INDEX__]" placeholder="Deskripsi singkat foto">
+                                    </label>
+                                    <button class="ghost-btn danger" type="button" data-remove-new-photo>Hapus Baris</button>
+                                </div>
+                            </div>
+                        </template>
+
+                        <button class="ghost-btn add-photo-btn" type="button" data-add-gallery-photo>Tambah Foto</button>
+                    </div>
+                @endif
             </div>
 
             <div class="form-actions">

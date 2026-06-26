@@ -170,10 +170,8 @@ class ContentRegistry
                 'model' => GalleryItem::class,
                 'title' => 'title',
                 'fields' => [
-                    self::field('title', 'Judul / Alt Text', 'text', 'required|string|max:255'),
-                    self::field('description', 'Deskripsi', 'textarea', 'nullable|string'),
-                    self::field('image_url', 'Upload Gambar', 'file', 'nullable|image|max:4096'),
-                    self::field('url', 'URL Tujuan', 'text', 'required|string|max:255'),
+                    self::field('title', 'Judul Kegiatan', 'text', 'required|string|max:255'),
+                    self::field('published_at', 'Tanggal Kegiatan', 'date', 'nullable|date'),
                     self::field('sort_order', 'Urutan', 'number', 'required|integer|min:0'),
                     self::field('is_active', 'Aktif', 'checkbox', 'boolean'),
                 ],

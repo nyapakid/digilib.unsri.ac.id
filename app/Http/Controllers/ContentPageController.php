@@ -80,12 +80,21 @@ class ContentPageController extends Controller
 
     public function galleries(): View
     {
-        return $this->indexView('galleries', 'Galeri', GalleryItem::class, 'description');
+        return view('content.index', [
+            'site' => SiteSetting::current(),
+            'menus' => MenuItem::active()->ordered()->get(),
+            'type' => 'galleries',
+            'title' => 'Galeri',
+            'excerptColumn' => 'published_at',
+            'items' => GalleryItem::with('coverPhoto')->active()->ordered()->paginate(9),
+        ]);
     }
 
     public function gallery(GalleryItem $gallery): View
     {
-        return $this->showView('galleries', 'Galeri', $gallery, 'description', 'description');
+        $gallery->load('photos');
+
+        return $this->showView('galleries', 'Galeri', $gallery, 'published_at', 'description');
     }
 
     public function staff(Request $request): View

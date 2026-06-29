@@ -226,6 +226,7 @@ partnerCarousels.forEach((carousel) => {
   let autoTimerId = null;
   let dragStartX = 0;
   let dragOffset = 0;
+  let didDrag = false;
   let isDragging = false;
   let resizeFrameId = null;
   let suppressClick = false;
@@ -339,7 +340,8 @@ partnerCarousels.forEach((carousel) => {
     }
 
     isDragging = false;
-    suppressClick = Math.abs(dragOffset) > 6;
+    suppressClick = didDrag && Math.abs(dragOffset) > 8;
+    didDrag = false;
     dragOffset = 0;
     viewport.classList.remove("is-dragging");
     if (event.pointerId !== undefined && viewport.hasPointerCapture?.(event.pointerId)) {
@@ -357,6 +359,7 @@ partnerCarousels.forEach((carousel) => {
     isDragging = true;
     dragStartX = event.clientX;
     dragOffset = 0;
+    didDrag = false;
     stopAutoSlide();
     viewport.classList.add("is-dragging");
     viewport.setPointerCapture?.(event.pointerId);
@@ -370,11 +373,14 @@ partnerCarousels.forEach((carousel) => {
 
     dragOffset = event.clientX - dragStartX;
 
-    if (Math.abs(dragOffset) > 3) {
+    if (Math.abs(dragOffset) > 8) {
+      didDrag = true;
       event.preventDefault();
     }
 
-    setTranslate(dragOffset, false);
+    if (didDrag) {
+      setTranslate(dragOffset, false);
+    }
   });
 
   viewport.addEventListener("pointerup", endDrag);

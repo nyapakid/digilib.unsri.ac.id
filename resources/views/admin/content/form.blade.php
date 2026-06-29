@@ -4,6 +4,7 @@
 @php($hasSummernote = collect($definition['fields'])->contains(fn (array $field) => $field['type'] === 'summernote'))
 @php($hasMenuLink = collect($definition['fields'])->contains(fn (array $field) => $field['type'] === 'menu_link'))
 @php($hasGalleryPhotos = $type === 'galleries')
+@php($hasResourceItems = $type === 'resources')
 
 @if($hasSummernote)
     @push('styles')
@@ -88,10 +89,9 @@
                     }
 
                     addButton.addEventListener("click", function () {
-                        var html = template.innerHTML.replaceAll("__INDEX__", String(nextIndex));
-                        var wrapper = document.createElement("div");
-                        wrapper.innerHTML = html.trim();
-                        list.appendChild(wrapper.firstElementChild);
+                        var wrapper = document.createElement("template");
+                        wrapper.innerHTML = template.innerHTML.replaceAll("__INDEX__", String(nextIndex)).trim();
+                        list.appendChild(wrapper.content.firstElementChild);
                         nextIndex += 1;
                         manager.dataset.nextIndex = String(nextIndex);
                     });
@@ -110,6 +110,47 @@
                 document.addEventListener("DOMContentLoaded", initGalleryPhotoManager);
             } else {
                 initGalleryPhotoManager();
+            }
+        </script>
+    @endpush
+@endif
+
+@if($hasResourceItems)
+    @push('scripts')
+        <script>
+            function initResourceItemManager() {
+                document.querySelectorAll("[data-resource-item-manager]").forEach(function (manager) {
+                    var list = manager.querySelector("[data-resource-item-list]");
+                    var template = manager.querySelector("[data-resource-item-template]");
+                    var addButton = manager.querySelector("[data-add-resource-item]");
+                    var nextIndex = Number(manager.dataset.nextIndex || 1);
+
+                    if (!list || !template || !addButton) {
+                        return;
+                    }
+
+                    addButton.addEventListener("click", function () {
+                        var wrapper = document.createElement("template");
+                        wrapper.innerHTML = template.innerHTML.replaceAll("__INDEX__", String(nextIndex)).trim();
+                        list.appendChild(wrapper.content.firstElementChild);
+                        nextIndex += 1;
+                        manager.dataset.nextIndex = String(nextIndex);
+                    });
+
+                    list.addEventListener("click", function (event) {
+                        var button = event.target.closest("[data-remove-new-resource-item]");
+
+                        if (button) {
+                            button.closest(".resource-item-row")?.remove();
+                        }
+                    });
+                });
+            }
+
+            if (document.readyState === "loading") {
+                document.addEventListener("DOMContentLoaded", initResourceItemManager);
+            } else {
+                initResourceItemManager();
             }
         </script>
     @endpush
@@ -301,6 +342,141 @@
                         </template>
 
                         <button class="ghost-btn add-photo-btn" type="button" data-add-gallery-photo>Tambah Foto</button>
+                    </div>
+                @endif
+
+                @if($hasResourceItems)
+                    @php($existingItems = $item->relationLoaded('items') ? $item->items : collect())
+                    @php($newItemTitles = old('new_resource_item_titles', ['']))
+                    @php($nextResourceIndex = max(1, count($newItemTitles)))
+
+                    <div class="field-group full resource-item-manager" data-resource-item-manager data-next-index="{{ $nextResourceIndex }}">
+                        <div>
+                            <span class="field-label">List Tautan e-Resource</span>
+                            <small class="field-help">Tambahkan tautan yang akan tampil di detail e-Resource. Di frontend hanya gambar yang tampil sebagai link; jika gambar kosong, URL link akan tampil sebagai teks.</small>
+                        </div>
+
+                        <div class="resource-item-table-wrap">
+                            <table class="resource-item-table">
+                                <thead>
+                                    <tr>
+                                        <th>Judul</th>
+                                        <th>Link</th>
+                                        <th>Gambar</th>
+                                        <th>Urutan</th>
+                                        <th>Hapus</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-resource-item-list>
+                                @foreach($existingItems as $resourceItem)
+                                    <tr class="resource-item-row">
+                                        <td>
+                                            <label>
+                                                <span class="sr-only">Judul</span>
+                                                <input type="text" name="existing_resource_item_titles[{{ $resourceItem->id }}]" value="{{ old('existing_resource_item_titles.'.$resourceItem->id, $resourceItem->title) }}">
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <label>
+                                                <span class="sr-only">Link</span>
+                                                <input type="text" name="existing_resource_item_urls[{{ $resourceItem->id }}]" value="{{ old('existing_resource_item_urls.'.$resourceItem->id, $resourceItem->url) }}">
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <div class="resource-item-image-cell">
+                                            @if($resourceItem->image_url)
+                                                    <img class="resource-item-thumb" src="{{ $resourceItem->image_url }}" alt="{{ $resourceItem->title }}">
+                                            @else
+                                                    <span class="resource-item-empty-image">Tanpa gambar</span>
+                                            @endif
+                                                <label>
+                                                    <span class="sr-only">Ganti Gambar</span>
+                                                <input type="file" name="existing_resource_item_images[{{ $resourceItem->id }}]" accept="image/*">
+                                                </label>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <label>
+                                                <span class="sr-only">Urutan</span>
+                                                <input type="number" name="existing_resource_item_orders[{{ $resourceItem->id }}]" value="{{ old('existing_resource_item_orders.'.$resourceItem->id, $resourceItem->sort_order) }}" min="0">
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <label class="checkbox-row remove-photo resource-item-remove">
+                                                <input type="checkbox" name="remove_resource_item_ids[]" value="{{ $resourceItem->id }}" @checked(in_array($resourceItem->id, old('remove_resource_item_ids', [])))>
+                                                <span>Hapus</span>
+                                            </label>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @foreach($newItemTitles as $index => $newTitle)
+                                    <tr class="resource-item-row new">
+                                        <td>
+                                        <label>
+                                                <span class="sr-only">Judul</span>
+                                            <input type="text" name="new_resource_item_titles[{{ $index }}]" value="{{ $newTitle }}" placeholder="Contoh: ScienceDirect">
+                                        </label>
+                                        </td>
+                                        <td>
+                                        <label>
+                                                <span class="sr-only">Link</span>
+                                            <input type="text" name="new_resource_item_urls[{{ $index }}]" value="{{ old('new_resource_item_urls.'.$index) }}" placeholder="https://contoh.ac.id">
+                                        </label>
+                                        </td>
+                                        <td>
+                                        <label>
+                                                <span class="sr-only">Upload Gambar</span>
+                                            <input type="file" name="new_resource_item_images[{{ $index }}]" accept="image/*">
+                                        </label>
+                                        </td>
+                                        <td>
+                                            <label>
+                                                <span class="sr-only">Urutan</span>
+                                                <input type="number" name="new_resource_item_orders[{{ $index }}]" value="{{ old('new_resource_item_orders.'.$index, 0) }}" min="0">
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <button class="ghost-btn danger table-action-btn" type="button" data-remove-new-resource-item>Hapus</button>
+                                        </td>
+                                    </tr>
+                            @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <template data-resource-item-template>
+                            <tr class="resource-item-row new">
+                                <td>
+                                    <label>
+                                        <span class="sr-only">Judul</span>
+                                        <input type="text" name="new_resource_item_titles[__INDEX__]" placeholder="Contoh: ScienceDirect">
+                                    </label>
+                                </td>
+                                <td>
+                                    <label>
+                                        <span class="sr-only">Link</span>
+                                        <input type="text" name="new_resource_item_urls[__INDEX__]" placeholder="https://contoh.ac.id">
+                                    </label>
+                                </td>
+                                <td>
+                                    <label>
+                                        <span class="sr-only">Upload Gambar</span>
+                                        <input type="file" name="new_resource_item_images[__INDEX__]" accept="image/*">
+                                    </label>
+                                </td>
+                                <td>
+                                    <label>
+                                        <span class="sr-only">Urutan</span>
+                                        <input type="number" name="new_resource_item_orders[__INDEX__]" value="0" min="0">
+                                    </label>
+                                </td>
+                                <td>
+                                    <button class="ghost-btn danger table-action-btn" type="button" data-remove-new-resource-item>Hapus</button>
+                                </td>
+                            </tr>
+                        </template>
+
+                        <button class="ghost-btn add-photo-btn" type="button" data-add-resource-item>Tambah Tautan</button>
                     </div>
                 @endif
             </div>

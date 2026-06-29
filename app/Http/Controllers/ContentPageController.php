@@ -25,6 +25,8 @@ class ContentPageController extends Controller
 
     public function resource(ResourceLink $resource): View
     {
+        $resource->load('items');
+
         return $this->showView('resources', 'Digilib e-Resources', $resource, 'description', 'body');
     }
 

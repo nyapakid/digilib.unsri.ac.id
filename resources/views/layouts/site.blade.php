@@ -17,10 +17,8 @@
             <div class="top-items">
                 <span class="icon-text">
                     <span class="icon" aria-hidden="true"><x-icon name="map-pin" :size="19" /></span>
-                    {{ $site->address }}
+                    {{ $site->motto ?: $site->site_name }}
                 </span>
-                <span class="icon-text">
-                   
             </div>
             <div class="top-items">
                 <span class="icon-text">

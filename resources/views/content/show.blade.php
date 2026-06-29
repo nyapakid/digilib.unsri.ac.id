@@ -121,6 +121,23 @@
                         @endif
                     </div>
 
+                    @if($type === 'resources' && $item->relationLoaded('items') && $item->items->isNotEmpty())
+                        <div class="resource-link-panel">
+                            <h2>Tautan e-Resource</h2>
+                            <div class="resource-link-items">
+                                @foreach($item->items as $resourceItem)
+                                    <a class="resource-link-item" href="{{ $resourceItem->url }}" target="_blank" rel="noopener" aria-label="{{ $resourceItem->title }}">
+                                        @if($resourceItem->image_url)
+                                            <img src="{{ $resourceItem->image_url }}" alt="{{ $resourceItem->title }}">
+                                        @else
+                                            <span>{{ $resourceItem->url }}</span>
+                                        @endif
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
                     @if(isset($item->url) && $item->url && $item->url !== '#')
                         <p><a class="btn" href="{{ $item->url }}" target="_blank" rel="noopener">Buka Tautan <span aria-hidden="true">&rarr;</span></a></p>
                     @endif

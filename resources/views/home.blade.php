@@ -256,7 +256,8 @@
                 <div class="partner-viewport">
                     <div class="partner-track">
                         @foreach ($partners as $partner)
-                            <a class="partner" href="{{ $partner->url }}" target="_blank" rel="noopener" data-partner-item draggable="false">
+                            @php($partnerUrl = preg_match('/^(https?:)?\/\//i', $partner->url) || str_starts_with($partner->url, '#') ? $partner->url : 'https://'.ltrim($partner->url, '/'))
+                            <a class="partner" href="{{ $partnerUrl }}" target="_blank" rel="noopener" data-partner-item draggable="false">
                                 @if($partner->logo_url)
                                     <span class="partner-logo">
                                         <img src="{{ $partner->logo_url }}" alt="{{ $partner->name }}" draggable="false">

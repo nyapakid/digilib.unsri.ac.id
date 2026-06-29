@@ -49,6 +49,7 @@ class SiteSettingController extends Controller
             ['site_name', 'Nama Situs', 'text'],
             ['brand_name', 'Nama Brand Header', 'text'],
             ['university_name', 'Nama Institusi', 'text'],
+            ['motto', 'Motto Header Atas', 'text'],
             ['logo_path', 'Upload Logo Gambar', 'file'],
             ['page_hero_image_path', 'Gambar Background Page Hero', 'file'],
             ['address', 'Alamat', 'textarea'],

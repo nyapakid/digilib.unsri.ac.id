@@ -14,6 +14,7 @@ use App\Models\NewsPost;
 use App\Models\Page;
 use App\Models\Partner;
 use App\Models\ResourceLink;
+use App\Models\ResourceLinkItem;
 use App\Models\Service;
 use App\Models\SiteSetting;
 use App\Models\StaffMember;
@@ -44,6 +45,7 @@ class DatabaseSeeder extends Seeder
             'site_name' => 'Digilib Universitas Sriwijaya',
             'brand_name' => 'SIneRGiS',
             'university_name' => 'Universitas Sriwijaya',
+            'motto' => 'System for Integrated e-Resources & Library Gateway of Sriwijaya (SIneRGiS)',
             'logo_text' => 'US',
             'logo_path' => '/images/unsri-logo.svg',
             'address' => 'Jl. Palembang - Prabumulih Km. 32, Indralaya, Ogan Ilir 30662, Sumatera Selatan',
@@ -139,6 +141,15 @@ class DatabaseSeeder extends Seeder
             ['title' => 'SIneRGIS', 'description' => 'System for Integrated e-Resources & Library Gateway of Sriwijaya', 'body' => 'SIneRGIS menjadi gerbang terpadu untuk mengakses sumber informasi digital dan layanan perpustakaan Universitas Sriwijaya.', 'url' => '#', 'icon' => 'grid', 'background_color' => '#f7fff9', 'sort_order' => 4],
             ['title' => 'e-Proceeding', 'description' => 'Prosiding konferensi', 'body' => 'e-Proceeding menyediakan akses ke prosiding kegiatan ilmiah, seminar, dan konferensi yang berkaitan dengan Universitas Sriwijaya.', 'url' => '#', 'icon' => 'file', 'background_color' => '#fff7fb', 'sort_order' => 5],
             ['title' => 'Database', 'description' => 'Basis data langganan', 'body' => 'Database langganan menyediakan akses ke sumber referensi elektronik yang mendukung pembelajaran, penelitian, dan publikasi ilmiah.', 'url' => '#', 'icon' => 'shield', 'background_color' => '#f8f7ff', 'sort_order' => 6],
+        ]);
+
+        $this->seedResourceLinkItems([
+            'Database' => [
+                ['title' => 'ScienceDirect', 'url' => 'https://www.sciencedirect.com/', 'image_url' => null, 'sort_order' => 1],
+            ],
+            'Repository' => [
+                ['title' => 'Repository UNSRI', 'url' => '#', 'image_url' => null, 'sort_order' => 1],
+            ],
         ]);
 
         $this->seedOrdered(Banner::class, 'title', [
@@ -386,6 +397,34 @@ class DatabaseSeeder extends Seeder
                 $gallery->photos()->whereKeyNot($cover->id)->update(['is_cover' => false]);
                 $cover->forceFill(['is_cover' => true])->save();
                 $gallery->update(['image_url' => $cover->image_url, 'url' => '#']);
+            }
+        }
+    }
+
+    /**
+     * @param  array<string, array<int, array<string, mixed>>>  $groups
+     */
+    private function seedResourceLinkItems(array $groups): void
+    {
+        foreach ($groups as $resourceTitle => $items) {
+            $resource = ResourceLink::query()->where('title', $resourceTitle)->first();
+
+            if (! $resource) {
+                continue;
+            }
+
+            foreach ($items as $item) {
+                ResourceLinkItem::query()->updateOrCreate(
+                    [
+                        'resource_link_id' => $resource->id,
+                        'title' => $item['title'],
+                    ],
+                    [
+                        'url' => $item['url'],
+                        'image_url' => $item['image_url'] ?? null,
+                        'sort_order' => $item['sort_order'] ?? 0,
+                    ]
+                );
             }
         }
     }

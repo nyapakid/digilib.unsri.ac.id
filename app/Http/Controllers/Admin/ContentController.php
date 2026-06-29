@@ -7,6 +7,8 @@ use App\Models\GalleryItem;
 use App\Models\GalleryPhoto;
 use App\Models\MenuItem;
 use App\Models\Page;
+use App\Models\ResourceLink;
+use App\Models\ResourceLinkItem;
 use App\Support\Admin\ContentRegistry;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
@@ -31,6 +33,10 @@ class ContentController extends Controller
 
         if (($definition['model']) === GalleryItem::class) {
             $query->with('coverPhoto');
+        }
+
+        if (($definition['model']) === ResourceLink::class) {
+            $query->withCount('items');
         }
 
         $items = $query->orderBy('sort_order')
@@ -59,6 +65,11 @@ class ContentController extends Controller
 
         if (($definition['model']) === GalleryItem::class) {
             $this->storeGallery($request, $data);
+        } elseif (($definition['model']) === ResourceLink::class) {
+            DB::transaction(function () use ($definition, $request, $data) {
+                $resource = $definition['model']::create($data);
+                $this->syncResourceLinkItems($resource, $request);
+            });
         } else {
             $definition['model']::create($data);
         }
@@ -77,6 +88,10 @@ class ContentController extends Controller
             $item->load('photos');
         }
 
+        if ($item instanceof ResourceLink) {
+            $item->load('items');
+        }
+
         return view('admin.content.form', compact('type', 'definition', 'item'));
     }
 
@@ -91,6 +106,11 @@ class ContentController extends Controller
             DB::transaction(function () use ($item, $request, $data) {
                 $item->update($data);
                 $this->syncGalleryPhotos($item, $request);
+            });
+        } elseif ($item instanceof ResourceLink) {
+            DB::transaction(function () use ($item, $request, $data) {
+                $item->update($data);
+                $this->syncResourceLinkItems($item, $request);
             });
         } else {
             $item->update($data);
@@ -168,6 +188,17 @@ class ContentController extends Controller
             'remove_photo_ids',
             'cover_photo',
         ];
+        $resourceItemFields = [
+            'existing_resource_item_titles',
+            'existing_resource_item_urls',
+            'existing_resource_item_orders',
+            'existing_resource_item_images',
+            'remove_resource_item_ids',
+            'new_resource_item_titles',
+            'new_resource_item_urls',
+            'new_resource_item_orders',
+            'new_resource_item_images',
+        ];
 
         if (($definition['model']) === GalleryItem::class) {
             $rules['new_photos'] = ['nullable', 'array'];
@@ -179,6 +210,27 @@ class ContentController extends Controller
             $rules['remove_photo_ids'] = ['nullable', 'array'];
             $rules['remove_photo_ids.*'] = ['integer'];
             $rules['cover_photo'] = ['nullable', 'string', 'max:80'];
+        }
+
+        if (($definition['model']) === ResourceLink::class) {
+            $rules['existing_resource_item_titles'] = ['nullable', 'array'];
+            $rules['existing_resource_item_titles.*'] = ['nullable', 'string', 'max:255'];
+            $rules['existing_resource_item_urls'] = ['nullable', 'array'];
+            $rules['existing_resource_item_urls.*'] = ['nullable', 'string', 'max:255'];
+            $rules['existing_resource_item_orders'] = ['nullable', 'array'];
+            $rules['existing_resource_item_orders.*'] = ['nullable', 'integer', 'min:0'];
+            $rules['existing_resource_item_images'] = ['nullable', 'array'];
+            $rules['existing_resource_item_images.*'] = ['nullable', 'image', 'max:4096'];
+            $rules['remove_resource_item_ids'] = ['nullable', 'array'];
+            $rules['remove_resource_item_ids.*'] = ['integer'];
+            $rules['new_resource_item_titles'] = ['nullable', 'array'];
+            $rules['new_resource_item_titles.*'] = ['nullable', 'string', 'max:255'];
+            $rules['new_resource_item_urls'] = ['nullable', 'array'];
+            $rules['new_resource_item_urls.*'] = ['nullable', 'string', 'max:255'];
+            $rules['new_resource_item_orders'] = ['nullable', 'array'];
+            $rules['new_resource_item_orders.*'] = ['nullable', 'integer', 'min:0'];
+            $rules['new_resource_item_images'] = ['nullable', 'array'];
+            $rules['new_resource_item_images.*'] = ['nullable', 'image', 'max:4096'];
         }
 
         if (($definition['model']) === MenuItem::class && $item?->id) {
@@ -199,9 +251,13 @@ class ContentController extends Controller
             'slug.unique' => 'Judul halaman menghasilkan URL yang sudah digunakan. Gunakan judul lain.',
             'new_photos.*.image' => 'File foto galeri harus berupa gambar.',
             'new_photos.*.max' => 'Ukuran foto galeri maksimal 4 MB.',
+            'existing_resource_item_images.*.image' => 'Gambar tautan e-Resource harus berupa gambar.',
+            'new_resource_item_images.*.image' => 'Gambar tautan e-Resource harus berupa gambar.',
+            'existing_resource_item_images.*.max' => 'Ukuran gambar tautan maksimal 4 MB.',
+            'new_resource_item_images.*.max' => 'Ukuran gambar tautan maksimal 4 MB.',
         ]);
 
-        foreach ($galleryPhotoFields as $field) {
+        foreach ([...$galleryPhotoFields, ...$resourceItemFields] as $field) {
             unset($data[$field]);
         }
 
@@ -396,6 +452,95 @@ class ContentController extends Controller
         }
 
         return $gallery->photos()->where('is_cover', true)->first();
+    }
+
+    private function syncResourceLinkItems(ResourceLink $resource, Request $request): void
+    {
+        $removeIds = collect((array) $request->input('remove_resource_item_ids', []))
+            ->map(fn (mixed $id) => (int) $id)
+            ->filter()
+            ->values()
+            ->all();
+
+        if ($removeIds !== []) {
+            ResourceLinkItem::query()
+                ->where('resource_link_id', $resource->id)
+                ->whereIn('id', $removeIds)
+                ->delete();
+        }
+
+        $existingTitles = (array) $request->input('existing_resource_item_titles', []);
+        $existingUrls = (array) $request->input('existing_resource_item_urls', []);
+        $existingOrders = (array) $request->input('existing_resource_item_orders', []);
+
+        foreach ($existingTitles as $itemId => $title) {
+            $itemId = (int) $itemId;
+
+            if (in_array($itemId, $removeIds, true)) {
+                continue;
+            }
+
+            $url = $existingUrls[$itemId] ?? null;
+
+            if (blank($title) || blank($url)) {
+                throw ValidationException::withMessages([
+                    'existing_resource_item_titles.'.$itemId => 'Judul dan link tautan wajib diisi.',
+                ]);
+            }
+
+            $payload = [
+                'title' => $title,
+                'url' => $url,
+                'sort_order' => (int) ($existingOrders[$itemId] ?? 0),
+            ];
+
+            if ($request->hasFile('existing_resource_item_images.'.$itemId)) {
+                $payload['image_url'] = Storage::url($request->file('existing_resource_item_images.'.$itemId)->store('uploads/content/resources', 'public'));
+            }
+
+            ResourceLinkItem::query()
+                ->where('resource_link_id', $resource->id)
+                ->whereKey($itemId)
+                ->update($payload);
+        }
+
+        $newTitles = (array) $request->input('new_resource_item_titles', []);
+        $newUrls = (array) $request->input('new_resource_item_urls', []);
+        $newOrders = (array) $request->input('new_resource_item_orders', []);
+        $newFiles = (array) $request->file('new_resource_item_images', []);
+        $indexes = collect(array_keys($newTitles))
+            ->merge(array_keys($newUrls))
+            ->merge(array_keys($newOrders))
+            ->merge(array_keys($newFiles))
+            ->unique();
+
+        foreach ($indexes as $index) {
+            $title = $newTitles[$index] ?? null;
+            $url = $newUrls[$index] ?? null;
+            $file = $newFiles[$index] ?? null;
+
+            if (blank($title) && blank($url) && ! $file) {
+                continue;
+            }
+
+            if (blank($title) || blank($url)) {
+                throw ValidationException::withMessages([
+                    'new_resource_item_titles.'.$index => 'Judul dan link tautan wajib diisi jika menambah tautan.',
+                ]);
+            }
+
+            $payload = [
+                'title' => $title,
+                'url' => $url,
+                'sort_order' => (int) ($newOrders[$index] ?? 0),
+            ];
+
+            if ($file) {
+                $payload['image_url'] = Storage::url($file->store('uploads/content/resources', 'public'));
+            }
+
+            $resource->items()->create($payload);
+        }
     }
 
     private function findItem(array $definition, int $id): Model

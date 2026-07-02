@@ -1656,16 +1656,7 @@ a.date-row:hover {
   margin-top: 28px;
 }
 
-.pagination-wrap nav {
-  display: grid;
-  gap: 10px;
-}
-
-.pagination-wrap nav > div:first-child {
-  display: none;
-}
-
-.pagination-wrap nav > div:last-child {
+.app-pagination {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1673,16 +1664,74 @@ a.date-row:hover {
   flex-wrap: wrap;
 }
 
-.pagination-wrap nav p {
+.app-pagination-summary {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.app-pagination-links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.app-pagination-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--navy);
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.app-pagination-btn.is-active {
+  border-color: var(--yellow);
+  background: var(--yellow);
+}
+
+.app-pagination-btn.is-disabled {
+  color: var(--muted);
+  opacity: 0.55;
+}
+
+.pagination-wrap nav:not(.app-pagination) {
+  display: grid;
+  gap: 10px;
+}
+
+.pagination-wrap nav:not(.app-pagination) > div:first-child {
+  display: none;
+}
+
+.pagination-wrap nav:not(.app-pagination) > div:last-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.pagination-wrap nav:not(.app-pagination) p {
   margin: 0;
   color: var(--muted);
   font-size: 13px;
   font-weight: 700;
 }
 
-.pagination-wrap nav span[aria-current="page"] span,
-.pagination-wrap nav a,
-.pagination-wrap nav span[aria-disabled="true"] span {
+.pagination-wrap nav:not(.app-pagination) span[aria-current="page"] span,
+.pagination-wrap nav:not(.app-pagination) a,
+.pagination-wrap nav:not(.app-pagination) span[aria-disabled="true"] span {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1699,17 +1748,17 @@ a.date-row:hover {
   text-decoration: none;
 }
 
-.pagination-wrap nav span[aria-current="page"] span {
+.pagination-wrap nav:not(.app-pagination) span[aria-current="page"] span {
   border-color: var(--yellow);
   background: var(--yellow);
 }
 
-.pagination-wrap nav span[aria-disabled="true"] span {
+.pagination-wrap nav:not(.app-pagination) span[aria-disabled="true"] span {
   color: var(--muted);
   opacity: 0.55;
 }
 
-.pagination-wrap nav svg {
+.pagination-wrap nav:not(.app-pagination) svg {
   width: 16px;
   height: 16px;
   display: block;
@@ -2037,6 +2086,11 @@ a.date-row:hover {
 
   .partner {
     flex-basis: calc((100% - 14px) / 2);
+  }
+
+  .app-pagination {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .staff-detail-card {

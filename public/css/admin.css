@@ -850,6 +850,61 @@ nav[role="navigation"] {
   margin-top: 18px;
 }
 
+.app-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.app-pagination-summary {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.app-pagination-links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.app-pagination-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--white);
+  color: var(--navy);
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.app-pagination-btn.is-active {
+  border-color: var(--yellow);
+  background: var(--yellow);
+}
+
+.app-pagination-btn.is-disabled {
+  color: var(--muted);
+  opacity: 0.55;
+}
+
+nav[role="navigation"] svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
 @media (max-width: 1100px) {
   .admin-shell {
     grid-template-columns: 1fr;
@@ -884,6 +939,11 @@ nav[role="navigation"] {
   .dashboard-grid,
   .form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .app-pagination {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .gallery-photo-row {

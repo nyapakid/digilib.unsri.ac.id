@@ -90,7 +90,7 @@
                 </div>
 
                 <div class="pagination-wrap">
-                    {{ $items->links() }}
+                    {{ $items->links('components.pagination') }}
                 </div>
             @endif
         </div>

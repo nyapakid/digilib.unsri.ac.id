@@ -66,6 +66,6 @@
             </table>
         </div>
 
-        {{ $items->links() }}
+        {{ $items->links('components.pagination') }}
     </section>
 @endsection

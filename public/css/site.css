@@ -1402,6 +1402,21 @@ a.date-row:hover {
   margin-top: 0;
 }
 
+.safe-embed {
+  display: grid;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.safe-embed iframe {
+  width: 100%;
+  max-width: 100%;
+  min-height: 360px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--soft);
+}
+
 .resource-link-panel {
   margin: 0 0 26px;
   padding: 20px;
@@ -1775,11 +1790,12 @@ a.date-row:hover {
   line-height: 1;
 }
 
-.footer-brand span:last-child {
+.footer-brand > span > span {
   color: rgba(255, 255, 255, 0.74);
   font-size: 12px;
   font-weight: 800;
-  text-transform: uppercase;
+  line-height: 1.35;
+  text-transform: none;
 }
 
 .copyright {

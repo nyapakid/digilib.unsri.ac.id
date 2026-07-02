@@ -9,7 +9,7 @@
         <div class="container">
             <p class="crumb"><a href="{{ route('home') }}">Beranda</a> / {{ $title }}</p>
             <h1>{{ $title }}</h1>
-            <p>Daftar informasi {{ strtolower($title) }} yang tersedia dan dapat dikelola melalui backend.</p>
+            <p>{{ $pageDescription ?? 'Daftar informasi '.strtolower($title).' yang tersedia dan dapat dikelola melalui backend.' }}</p>
         </div>
     </section>
 

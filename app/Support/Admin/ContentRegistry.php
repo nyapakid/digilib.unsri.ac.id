@@ -226,6 +226,7 @@ class ContentRegistry
                     self::field('title', 'Judul', 'text', 'required|string|max:255'),
                     self::field('excerpt', 'Ringkasan', 'textarea', 'nullable|string|max:255'),
                     self::field('body', 'Isi Halaman', 'summernote', 'nullable|string'),
+                    self::field('embed_html', 'Kode Embed HTML Aman', 'textarea', 'nullable|string'),
                     self::field('sort_order', 'Urutan', 'number', 'required|integer|min:0'),
                     self::field('is_active', 'Aktif', 'checkbox', 'boolean'),
                 ],

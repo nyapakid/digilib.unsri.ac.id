@@ -71,6 +71,14 @@ class DatabaseSeeder extends Seeder
             'hero_fact_2_icon' => 'clock',
             'stats_title' => 'Statistik Pengunjung',
             'stats_subtitle' => '(Tahun 2026)',
+            'services_module_title' => 'Layanan',
+            'services_module_description' => 'Daftar informasi layanan yang tersedia dan dapat dikelola melalui backend.',
+            'facilities_module_title' => 'Fasilitas',
+            'facilities_module_description' => 'Daftar informasi fasilitas yang tersedia dan dapat dikelola melalui backend.',
+            'staff_module_title' => 'Staff',
+            'staff_module_description' => 'Daftar informasi staff yang tersedia dan dapat dikelola melalui backend.',
+            'galleries_module_title' => 'Galeri',
+            'galleries_module_description' => 'Daftar informasi galeri yang tersedia dan dapat dikelola melalui backend.',
         ]);
 
         $this->seedOrdered(HeroSlide::class, 'title', [
@@ -122,16 +130,16 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->seedOrdered(MenuItem::class, 'label', [
-            ['label' => 'Beranda', 'url' => '/', 'sort_order' => 1],
-            ['label' => 'Profil', 'url' => '#profil', 'sort_order' => 2],
-            ['label' => 'Fasilitas', 'url' => '#fasilitas', 'sort_order' => 3],
-            ['label' => 'Layanan', 'url' => '#layanan', 'sort_order' => 4],
-            ['label' => 'Peraturan', 'url' => '/halaman/peraturan', 'sort_order' => 5],
-            ['label' => 'Staff', 'url' => '/staff', 'sort_order' => 6],
-            ['label' => 'Lokasi', 'url' => '/halaman/lokasi', 'sort_order' => 7],
-            ['label' => 'Berita', 'url' => '#berita', 'sort_order' => 8],
-            ['label' => 'Galeri', 'url' => '#galeri', 'sort_order' => 9],
-            ['label' => 'Kontak', 'url' => '#kontak', 'sort_order' => 10],
+            ['label' => 'Beranda', 'url' => '/', 'sort_order' => 1, 'show_in_footer' => true],
+            ['label' => 'Profil', 'url' => '#profil', 'sort_order' => 2, 'show_in_footer' => true],
+            ['label' => 'Fasilitas', 'url' => '#fasilitas', 'sort_order' => 3, 'show_in_footer' => true],
+            ['label' => 'Layanan', 'url' => '#layanan', 'sort_order' => 4, 'show_in_footer' => true],
+            ['label' => 'Peraturan', 'url' => '/halaman/peraturan', 'sort_order' => 5, 'show_in_footer' => true],
+            ['label' => 'Staff', 'url' => '/staff', 'sort_order' => 6, 'show_in_footer' => true],
+            ['label' => 'Lokasi', 'url' => '/halaman/lokasi', 'sort_order' => 7, 'show_in_footer' => true],
+            ['label' => 'Berita', 'url' => '#berita', 'sort_order' => 8, 'show_in_footer' => true],
+            ['label' => 'Galeri', 'url' => '#galeri', 'sort_order' => 9, 'show_in_footer' => true],
+            ['label' => 'Kontak', 'url' => '#kontak', 'sort_order' => 10, 'show_in_footer' => true],
         ]);
 
         $this->seedOrdered(ResourceLink::class, 'title', [

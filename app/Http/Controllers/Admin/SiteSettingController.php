@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\MenuItem;
 use App\Models\SiteSetting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,12 +17,22 @@ class SiteSettingController extends Controller
         return view('admin.settings.edit', [
             'site' => SiteSetting::current(),
             'fields' => $this->fields(),
+            'moduleFields' => $this->moduleFields(),
+            'footerMenuOptions' => MenuItem::query()
+                ->with('parent')
+                ->orderBy('sort_order')
+                ->orderByDesc('id')
+                ->get(),
         ]);
     }
 
     public function update(Request $request): RedirectResponse
     {
-        $data = $request->validate($this->rules());
+        $data = $request->validate(array_merge($this->rules(), [
+            'footer_menu_ids' => ['nullable', 'array'],
+            'footer_menu_ids.*' => ['integer', 'exists:menu_items,id'],
+        ]));
+        unset($data['footer_menu_ids']);
         $fileFields = collect($this->fields())
             ->filter(fn (array $field) => $field[2] === 'file')
             ->pluck(0);
@@ -37,6 +48,7 @@ class SiteSettingController extends Controller
         });
 
         SiteSetting::current()->update($data);
+        $this->syncFooterMenuChecklist($request);
 
         return redirect()
             ->route('admin.settings.edit')
@@ -66,14 +78,65 @@ class SiteSettingController extends Controller
         ];
     }
 
+    private function moduleFields(): array
+    {
+        return [
+            'services' => [
+                'label' => 'Layanan',
+                'title' => 'services_module_title',
+                'description' => 'services_module_description',
+            ],
+            'facilities' => [
+                'label' => 'Fasilitas',
+                'title' => 'facilities_module_title',
+                'description' => 'facilities_module_description',
+            ],
+            'staff' => [
+                'label' => 'Staff',
+                'title' => 'staff_module_title',
+                'description' => 'staff_module_description',
+            ],
+            'galleries' => [
+                'label' => 'Galeri',
+                'title' => 'galleries_module_title',
+                'description' => 'galleries_module_description',
+            ],
+        ];
+    }
+
     private function rules(): array
     {
-        return collect($this->fields())
+        $fieldRules = collect($this->fields())
             ->mapWithKeys(fn (array $field) => [
                 $field[0] => $field[2] === 'file'
                     ? ['nullable', 'image', 'max:4096']
                     : ['nullable', 'string'],
             ])
             ->all();
+
+        $moduleRules = collect($this->moduleFields())
+            ->flatMap(fn (array $field) => [
+                $field['title'] => ['nullable', 'string', 'max:255'],
+                $field['description'] => ['nullable', 'string'],
+            ])
+            ->all();
+
+        return array_merge($fieldRules, $moduleRules);
+    }
+
+    private function syncFooterMenuChecklist(Request $request): void
+    {
+        $selectedIds = collect((array) $request->input('footer_menu_ids', []))
+            ->map(fn (mixed $id) => (int) $id)
+            ->filter()
+            ->values();
+
+        MenuItem::query()->update(['show_in_footer' => false]);
+
+        if ($selectedIds->isNotEmpty()) {
+            MenuItem::query()
+                ->whereIn('id', $selectedIds)
+                ->update(['show_in_footer' => true]);
+        }
     }
 }

@@ -23,6 +23,12 @@
             @else
                 {!! nl2br(e($page->body)) !!}
             @endif
+
+            @if($page->embed_html)
+                <div class="safe-embed">
+                    {!! $page->embed_html !!}
+                </div>
+            @endif
         </div>
     </section>
 </main>

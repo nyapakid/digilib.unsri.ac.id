@@ -11,6 +11,7 @@
     @php($topMenus = $menus->filter(fn ($menu) => blank($menu->parent_id)))
     @php($menuChildren = $menus->filter(fn ($menu) => filled($menu->parent_id))->groupBy('parent_id'))
     @php($menuUrl = fn ($menu) => str_starts_with($menu->url, '#') ? route('home').$menu->url : $menu->url)
+    @php($footerMenus = \App\Models\MenuItem::active()->where('show_in_footer', true)->ordered()->get())
 
     <div class="topbar">
         <div class="container">
@@ -96,18 +97,17 @@
                     @else
                         <span class="seal" aria-hidden="true"><span>{{ $site->logo_text }}</span></span>
                     @endif
-                    <span><strong>DIGILIB</strong><span>{{ $site->university_name }}</span></span>
+                    <span><strong>{{ $site->brand_name }}</strong><span>{{ $site->motto }}</span></span>
                 </div>
                 <p>{{ $site->footer_description }}</p>
             </div>
             <div>
                 <h3>Tautan</h3>
                 <ul>
-                    @foreach ($topMenus as $menu)
-                        <li><a href="{{ $menuUrl($menu) }}">{{ $menu->label }}</a></li>
-                        @foreach($menuChildren->get($menu->id, collect()) as $child)
-                            <li><a href="{{ $menuUrl($child) }}">- {{ $child->label }}</a></li>
-                        @endforeach
+                    @foreach ($footerMenus as $menu)
+                        <li>
+                            <a href="{{ $menuUrl($menu) }}" @if($menu->opens_new_tab) target="_blank" rel="noopener" @endif>{{ $menu->label }}</a>
+                        </li>
                     @endforeach
                 </ul>
             </div>

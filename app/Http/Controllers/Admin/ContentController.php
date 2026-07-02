@@ -270,19 +270,25 @@ class ContentController extends Controller
             }
 
             unset($data['link_type'], $data['page_id'], $data['custom_url']);
-            $data['parent_id'] = $data['parent_id'] ?? null;
+            if (($definition['model']) === MenuItem::class) {
+                $data['parent_id'] = $data['parent_id'] ?? null;
+            }
 
-            if ($data['parent_id'] && ! MenuItem::query()->whereKey($data['parent_id'])->whereNull('parent_id')->exists()) {
+            if (($definition['model']) === MenuItem::class && $data['parent_id'] && ! MenuItem::query()->whereKey($data['parent_id'])->whereNull('parent_id')->exists()) {
                 throw ValidationException::withMessages([
                     'parent_id' => 'Induk menu harus berupa menu utama.',
                 ]);
             }
 
-            if ($item?->exists && $data['parent_id'] && $item->children()->exists()) {
+            if (($definition['model']) === MenuItem::class && $item?->exists && $data['parent_id'] && $item->children()->exists()) {
                 throw ValidationException::withMessages([
                     'parent_id' => 'Menu yang sudah memiliki child tidak dapat dijadikan child.',
                 ]);
             }
+        }
+
+        if (($definition['model']) === Page::class && array_key_exists('embed_html', $data)) {
+            $data['embed_html'] = $this->sanitizePageEmbedHtml($data['embed_html']);
         }
 
         foreach ($checkboxes as $checkbox) {
@@ -546,5 +552,69 @@ class ContentController extends Controller
     private function findItem(array $definition, int $id): Model
     {
         return $definition['model']::query()->findOrFail($id);
+    }
+
+    private function sanitizePageEmbedHtml(?string $html): ?string
+    {
+        if (blank($html)) {
+            return null;
+        }
+
+        $html = trim((string) $html);
+        $html = preg_replace('/<!--.*?-->/s', '', $html) ?? '';
+        $html = preg_replace('/<(script|style|object|embed|link|meta|form|input|button|textarea|select)\b[^>]*>.*?<\/\1>/is', '', $html) ?? '';
+        $html = preg_replace('/<(script|style|object|embed|link|meta|form|input|button|textarea|select)\b[^>]*\/?>/is', '', $html) ?? '';
+        $html = strip_tags($html, '<iframe>');
+
+        $sanitized = preg_replace_callback('/<iframe\b([^>]*)>(.*?)<\/iframe>/is', function (array $matches): string {
+            preg_match_all('/([a-zA-Z0-9:-]+)\s*=\s*("([^"]*)"|\'([^\']*)\'|([^\s"\'>]+))/', $matches[1], $attributeMatches, PREG_SET_ORDER);
+
+            $allowedAttributes = [
+                'src',
+                'title',
+                'width',
+                'height',
+                'allow',
+                'allowfullscreen',
+                'loading',
+                'referrerpolicy',
+                'frameborder',
+                'class',
+                'style',
+            ];
+            $attributes = [];
+
+            foreach ($attributeMatches as $attribute) {
+                $name = strtolower($attribute[1]);
+                $value = $attribute[3] ?? $attribute[4] ?? $attribute[5] ?? '';
+
+                if (str_starts_with($name, 'on') || ! in_array($name, $allowedAttributes, true)) {
+                    continue;
+                }
+
+                if ($name === 'src' && ! preg_match('/^https?:\/\//i', $value)) {
+                    continue;
+                }
+
+                if ($name === 'style') {
+                    $value = preg_replace('/expression\s*\(|javascript\s*:/i', '', $value) ?? '';
+                }
+
+                $attributes[$name] = e($value);
+            }
+
+            if (empty($attributes['src'])) {
+                return '';
+            }
+
+            $attributes['loading'] ??= 'lazy';
+            $attributeString = collect($attributes)
+                ->map(fn (string $value, string $name) => $name.'="'.$value.'"')
+                ->implode(' ');
+
+            return '<iframe '.$attributeString.'></iframe>';
+        }, $html) ?? '';
+
+        return blank($sanitized) ? null : $sanitized;
     }
 }

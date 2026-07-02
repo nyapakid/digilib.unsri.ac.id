@@ -703,6 +703,149 @@ textarea {
   gap: 16px;
 }
 
+.settings-module-section {
+  display: grid;
+  gap: 14px;
+  padding-top: 4px;
+}
+
+.footer-checklist-section {
+  display: grid;
+  gap: 14px;
+  padding-top: 4px;
+}
+
+.settings-module-section h2 {
+  margin: 0 0 4px;
+  color: var(--navy);
+  font-size: 20px;
+}
+
+.settings-module-section p,
+.footer-checklist-section p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.footer-checklist-section h2 {
+  margin: 0 0 4px;
+  color: var(--navy);
+  font-size: 20px;
+}
+
+.footer-menu-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+}
+
+.footer-menu-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+}
+
+.footer-menu-table th,
+.footer-menu-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.footer-menu-table th {
+  background: var(--soft);
+  color: var(--navy);
+  font-size: 13px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.footer-menu-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.footer-menu-table th:first-child,
+.footer-menu-table td:first-child {
+  width: 92px;
+  text-align: center;
+}
+
+.footer-menu-check {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  margin: 0 auto;
+  cursor: pointer;
+}
+
+.footer-menu-check input {
+  width: 20px;
+  height: 20px;
+  min-height: 20px;
+  margin: 0;
+  padding: 0;
+  accent-color: var(--yellow);
+  cursor: pointer;
+}
+
+.footer-menu-name {
+  display: inline-block;
+  color: var(--navy);
+}
+
+.footer-menu-name.is-child {
+  padding-left: 18px;
+}
+
+.footer-menu-url {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  word-break: break-word;
+}
+
+.settings-module-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--white);
+}
+
+.settings-module-table {
+  width: 100%;
+  min-width: 780px;
+  border-collapse: collapse;
+}
+
+.settings-module-table th,
+.settings-module-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.settings-module-table th {
+  background: var(--soft);
+  color: var(--navy);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.settings-module-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.settings-module-table td:first-child {
+  width: 140px;
+  color: var(--navy);
+}
+
 nav[role="navigation"] {
   margin-top: 18px;
 }

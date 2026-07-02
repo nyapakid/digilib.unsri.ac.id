@@ -19,6 +19,7 @@ class MenuItem extends Model
             'parent_id' => 'integer',
             'is_active' => 'boolean',
             'opens_new_tab' => 'boolean',
+            'show_in_footer' => 'boolean',
         ];
     }
 

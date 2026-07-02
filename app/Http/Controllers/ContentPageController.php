@@ -82,11 +82,15 @@ class ContentPageController extends Controller
 
     public function galleries(): View
     {
+        $site = SiteSetting::current();
+        [$title, $pageDescription] = $this->moduleCopy($site, 'galleries', 'Galeri');
+
         return view('content.index', [
-            'site' => SiteSetting::current(),
+            'site' => $site,
             'menus' => MenuItem::active()->ordered()->get(),
             'type' => 'galleries',
-            'title' => 'Galeri',
+            'title' => $title,
+            'pageDescription' => $pageDescription,
             'excerptColumn' => 'published_at',
             'items' => GalleryItem::with('coverPhoto')->active()->ordered()->paginate(9),
         ]);
@@ -101,6 +105,8 @@ class ContentPageController extends Controller
 
     public function staff(Request $request): View
     {
+        $site = SiteSetting::current();
+        [$title, $pageDescription] = $this->moduleCopy($site, 'staff', 'Staff');
         $selectedCategory = $request->query('category');
 
         if (! array_key_exists((string) $selectedCategory, StaffMember::CATEGORIES)) {
@@ -120,10 +126,11 @@ class ContentPageController extends Controller
             ->pluck('total', 'category');
 
         return view('content.index', [
-            'site' => SiteSetting::current(),
+            'site' => $site,
             'menus' => MenuItem::active()->ordered()->get(),
             'type' => 'staff',
-            'title' => 'Staff',
+            'title' => $title,
+            'pageDescription' => $pageDescription,
             'excerptColumn' => 'position',
             'items' => $items,
             'staffCategories' => StaffMember::CATEGORIES,
@@ -142,11 +149,15 @@ class ContentPageController extends Controller
      */
     private function indexView(string $type, string $title, string $model, string $excerptColumn): View
     {
+        $site = SiteSetting::current();
+        [$pageTitle, $pageDescription] = $this->moduleCopy($site, $type, $title);
+
         return view('content.index', [
-            'site' => SiteSetting::current(),
+            'site' => $site,
             'menus' => MenuItem::active()->ordered()->get(),
             'type' => $type,
-            'title' => $title,
+            'title' => $pageTitle,
+            'pageDescription' => $pageDescription,
             'excerptColumn' => $excerptColumn,
             'items' => $model::active()->ordered()->paginate(9),
         ]);
@@ -168,5 +179,26 @@ class ContentPageController extends Controller
             'bodyColumn' => $bodyColumn,
             'relatedItems' => $model::active()->ordered()->whereKeyNot($item->getKey())->take(5)->get(),
         ]);
+    }
+
+    private function moduleCopy(SiteSetting $site, string $type, string $fallbackTitle): array
+    {
+        $map = [
+            'services' => ['services_module_title', 'services_module_description'],
+            'facilities' => ['facilities_module_title', 'facilities_module_description'],
+            'staff' => ['staff_module_title', 'staff_module_description'],
+            'galleries' => ['galleries_module_title', 'galleries_module_description'],
+        ];
+
+        if (! isset($map[$type])) {
+            return [$fallbackTitle, 'Daftar informasi '.strtolower($fallbackTitle).' yang tersedia dan dapat dikelola melalui backend.'];
+        }
+
+        [$titleField, $descriptionField] = $map[$type];
+
+        return [
+            $site->{$titleField} ?: $fallbackTitle,
+            $site->{$descriptionField} ?: 'Daftar informasi '.strtolower($fallbackTitle).' yang tersedia dan dapat dikelola melalui backend.',
+        ];
     }
 }

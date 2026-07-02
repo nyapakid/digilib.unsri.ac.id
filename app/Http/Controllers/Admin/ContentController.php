@@ -10,6 +10,7 @@ use App\Models\Page;
 use App\Models\ResourceLink;
 use App\Models\ResourceLinkItem;
 use App\Support\Admin\ContentRegistry;
+use App\Support\ContentSanitizer;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -154,7 +155,9 @@ class ContentController extends Controller
                 continue;
             }
 
-            $rules[$field['name']] = $field['rules'];
+            $rules[$field['name']] = $field['type'] === 'file'
+                ? ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,gif', 'max:4096']
+                : $field['rules'];
 
             if ($field['type'] === 'checkbox') {
                 $checkboxes[] = $field['name'];
@@ -178,7 +181,7 @@ class ContentController extends Controller
         if (($definition['model']) === MenuItem::class) {
             $rules['link_type'] = ['required', 'in:page,url'];
             $rules['page_id'] = ['required_if:link_type,page', 'nullable', 'integer', 'exists:pages,id'];
-            $rules['custom_url'] = ['required_if:link_type,url', 'nullable', 'string', 'max:255'];
+            $rules['custom_url'] = ['required_if:link_type,url', 'nullable', 'string', 'max:255', $this->safeUrlRule()];
         }
 
         $galleryPhotoFields = [
@@ -216,7 +219,7 @@ class ContentController extends Controller
             $rules['existing_resource_item_titles'] = ['nullable', 'array'];
             $rules['existing_resource_item_titles.*'] = ['nullable', 'string', 'max:255'];
             $rules['existing_resource_item_urls'] = ['nullable', 'array'];
-            $rules['existing_resource_item_urls.*'] = ['nullable', 'string', 'max:255'];
+            $rules['existing_resource_item_urls.*'] = ['nullable', 'string', 'max:255', $this->safeUrlRule()];
             $rules['existing_resource_item_orders'] = ['nullable', 'array'];
             $rules['existing_resource_item_orders.*'] = ['nullable', 'integer', 'min:0'];
             $rules['existing_resource_item_images'] = ['nullable', 'array'];
@@ -226,7 +229,7 @@ class ContentController extends Controller
             $rules['new_resource_item_titles'] = ['nullable', 'array'];
             $rules['new_resource_item_titles.*'] = ['nullable', 'string', 'max:255'];
             $rules['new_resource_item_urls'] = ['nullable', 'array'];
-            $rules['new_resource_item_urls.*'] = ['nullable', 'string', 'max:255'];
+            $rules['new_resource_item_urls.*'] = ['nullable', 'string', 'max:255', $this->safeUrlRule()];
             $rules['new_resource_item_orders'] = ['nullable', 'array'];
             $rules['new_resource_item_orders.*'] = ['nullable', 'integer', 'min:0'];
             $rules['new_resource_item_images'] = ['nullable', 'array'];
@@ -240,6 +243,14 @@ class ContentController extends Controller
                 'exists:menu_items,id',
                 Rule::notIn([$item->id]),
             ];
+        }
+
+        foreach (['url', 'button_url'] as $urlField) {
+            if (isset($rules[$urlField])) {
+                $fieldRules = is_array($rules[$urlField]) ? $rules[$urlField] : explode('|', $rules[$urlField]);
+                $fieldRules[] = $this->safeUrlRule();
+                $rules[$urlField] = $fieldRules;
+            }
         }
 
         $data = $request->validate($rules, [
@@ -288,7 +299,13 @@ class ContentController extends Controller
         }
 
         if (($definition['model']) === Page::class && array_key_exists('embed_html', $data)) {
-            $data['embed_html'] = $this->sanitizePageEmbedHtml($data['embed_html']);
+            $data['embed_html'] = ContentSanitizer::sanitizeEmbedHtml($data['embed_html']);
+        }
+
+        foreach ($definition['fields'] as $field) {
+            if ($field['type'] === 'summernote' && array_key_exists($field['name'], $data)) {
+                $data[$field['name']] = ContentSanitizer::sanitizeRichHtml($data[$field['name']]);
+            }
         }
 
         foreach ($checkboxes as $checkbox) {
@@ -554,67 +571,16 @@ class ContentController extends Controller
         return $definition['model']::query()->findOrFail($id);
     }
 
-    private function sanitizePageEmbedHtml(?string $html): ?string
+    private function safeUrlRule(): callable
     {
-        if (blank($html)) {
-            return null;
-        }
-
-        $html = trim((string) $html);
-        $html = preg_replace('/<!--.*?-->/s', '', $html) ?? '';
-        $html = preg_replace('/<(script|style|object|embed|link|meta|form|input|button|textarea|select)\b[^>]*>.*?<\/\1>/is', '', $html) ?? '';
-        $html = preg_replace('/<(script|style|object|embed|link|meta|form|input|button|textarea|select)\b[^>]*\/?>/is', '', $html) ?? '';
-        $html = strip_tags($html, '<iframe>');
-
-        $sanitized = preg_replace_callback('/<iframe\b([^>]*)>(.*?)<\/iframe>/is', function (array $matches): string {
-            preg_match_all('/([a-zA-Z0-9:-]+)\s*=\s*("([^"]*)"|\'([^\']*)\'|([^\s"\'>]+))/', $matches[1], $attributeMatches, PREG_SET_ORDER);
-
-            $allowedAttributes = [
-                'src',
-                'title',
-                'width',
-                'height',
-                'allow',
-                'allowfullscreen',
-                'loading',
-                'referrerpolicy',
-                'frameborder',
-                'class',
-                'style',
-            ];
-            $attributes = [];
-
-            foreach ($attributeMatches as $attribute) {
-                $name = strtolower($attribute[1]);
-                $value = $attribute[3] ?? $attribute[4] ?? $attribute[5] ?? '';
-
-                if (str_starts_with($name, 'on') || ! in_array($name, $allowedAttributes, true)) {
-                    continue;
-                }
-
-                if ($name === 'src' && ! preg_match('/^https?:\/\//i', $value)) {
-                    continue;
-                }
-
-                if ($name === 'style') {
-                    $value = preg_replace('/expression\s*\(|javascript\s*:/i', '', $value) ?? '';
-                }
-
-                $attributes[$name] = e($value);
+        return function (string $attribute, mixed $value, \Closure $fail): void {
+            if (blank($value)) {
+                return;
             }
 
-            if (empty($attributes['src'])) {
-                return '';
+            if (! ContentSanitizer::isSafeUrl((string) $value)) {
+                $fail('URL hanya boleh berupa http(s), mailto, tel, path internal, atau anchor.');
             }
-
-            $attributes['loading'] ??= 'lazy';
-            $attributeString = collect($attributes)
-                ->map(fn (string $value, string $name) => $name.'="'.$value.'"')
-                ->implode(' ');
-
-            return '<iframe '.$attributeString.'></iframe>';
-        }, $html) ?? '';
-
-        return blank($sanitized) ? null : $sanitized;
+        };
     }
 }

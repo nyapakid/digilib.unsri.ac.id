@@ -19,7 +19,6 @@ use App\Models\Service;
 use App\Models\SiteSetting;
 use App\Models\StaffMember;
 use App\Models\Statistic;
-use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
@@ -33,13 +32,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::query()->updateOrCreate(
-            ['email' => 'admin@digilib.unsri.ac.id'],
-            [
-                'name' => 'Administrator Digilib',
-                'password' => 'password',
-            ]
-        );
+        $this->call(AdminUserSeeder::class);
 
         SiteSetting::query()->updateOrCreate(['id' => 1], [
             'site_name' => 'Digilib Universitas Sriwijaya',

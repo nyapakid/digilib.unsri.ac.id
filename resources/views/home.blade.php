@@ -10,7 +10,7 @@
                 <canvas class="hero-matrix-canvas" data-hero-matrix aria-hidden="true"></canvas>
                 <div class="container">
                     <div class="hero-copy">
-                        <h1>{{ $slide->title }} @if($slide->highlight)<span>{{ $slide->highlight }}</span>@endif</h1>
+                        <h1 data-hero-typewriter>{{ $slide->title }} @if($slide->highlight)<span class="hero-highlight">{{ $slide->highlight }}</span>@endif</h1>
                         <p>{{ $slide->description }}</p>
                         @if($slide->fact_1_title || $slide->fact_1_text || $slide->fact_2_title || $slide->fact_2_text)
                             <div class="hero-facts">
@@ -42,7 +42,7 @@
                 <canvas class="hero-matrix-canvas" data-hero-matrix aria-hidden="true"></canvas>
                 <div class="container">
                     <div class="hero-copy">
-                        <h1>{{ $site->hero_title }} <span>{{ $site->hero_highlight }}</span></h1>
+                        <h1 data-hero-typewriter>{{ $site->hero_title }} <span class="hero-highlight">{{ $site->hero_highlight }}</span></h1>
                         <p>{{ $site->hero_description }}</p>
                     </div>
                 </div>

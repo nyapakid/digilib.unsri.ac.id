@@ -19,14 +19,14 @@
             @php($containsHtml = $page->body !== strip_tags((string) $page->body))
 
             @if($containsHtml)
-                {!! $page->body !!}
+                {!! \App\Support\ContentSanitizer::sanitizeRichHtml($page->body) !!}
             @else
                 {!! nl2br(e($page->body)) !!}
             @endif
 
             @if($page->embed_html)
                 <div class="safe-embed">
-                    {!! $page->embed_html !!}
+                    {!! \App\Support\ContentSanitizer::sanitizeEmbedHtml($page->embed_html) !!}
                 </div>
             @endif
         </div>

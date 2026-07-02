@@ -18,6 +18,133 @@ if (toggle && menu) {
 const hero = document.querySelector(".hero-carousel");
 const slides = Array.from(document.querySelectorAll(".hero-slide"));
 const dots = Array.from(document.querySelectorAll("[data-hero-slide]"));
+const typewriterMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+let heroTypewriterTimers = [];
+const heroTypewriterSpeed = 58;
+
+const clearHeroTypewriterTimers = () => {
+  heroTypewriterTimers.forEach((timerId) => window.clearTimeout(timerId));
+  heroTypewriterTimers = [];
+};
+
+const prepareHeroTypewriter = (heading) => {
+  if (!heading || heading.dataset.typewriterReady === "true") {
+    return;
+  }
+
+  heading.setAttribute("aria-label", heading.textContent.trim());
+
+  const wrapTextNode = (node) => {
+    const fragment = document.createDocumentFragment();
+    const tokens = node.textContent.match(/(\s+|[^\s]+)/g) || [];
+
+    tokens.forEach((token) => {
+      if (/^\s+$/.test(token)) {
+        Array.from(token).forEach((char) => {
+          const span = document.createElement("span");
+
+          span.className = "hero-type-char hero-type-space";
+          span.setAttribute("aria-hidden", "true");
+          span.textContent = char;
+          fragment.appendChild(span);
+        });
+
+        return;
+      }
+
+      const word = document.createElement("span");
+
+      word.className = "hero-type-word";
+      Array.from(token).forEach((char) => {
+        const span = document.createElement("span");
+
+        span.className = "hero-type-char";
+        span.setAttribute("aria-hidden", "true");
+        span.textContent = char;
+        word.appendChild(span);
+      });
+      fragment.appendChild(word);
+    });
+
+    node.replaceWith(fragment);
+  };
+
+  const walk = (node) => {
+    Array.from(node.childNodes).forEach((child) => {
+      if (child.nodeType === Node.TEXT_NODE) {
+        wrapTextNode(child);
+        return;
+      }
+
+      if (child.nodeType === Node.ELEMENT_NODE) {
+        walk(child);
+      }
+    });
+  };
+
+  walk(heading);
+  const caret = document.createElement("span");
+
+  caret.className = "hero-type-caret";
+  caret.setAttribute("aria-hidden", "true");
+  heading.appendChild(caret);
+  heading.dataset.typewriterReady = "true";
+};
+
+const playHeroTypewriter = (slide) => {
+  const heading = slide ? slide.querySelector("[data-hero-typewriter]") : null;
+
+  clearHeroTypewriterTimers();
+  slides.forEach((item) => {
+    const itemHeading = item.querySelector("[data-hero-typewriter]");
+
+    if (itemHeading) {
+      itemHeading.classList.remove("is-typing", "typing-done");
+    }
+  });
+
+  if (!heading) {
+    return;
+  }
+
+  prepareHeroTypewriter(heading);
+
+  const chars = Array.from(heading.querySelectorAll(".hero-type-char"));
+  const caret = heading.querySelector(".hero-type-caret");
+
+  chars.forEach((char) => char.classList.remove("is-visible"));
+  heading.classList.remove("typing-done");
+  if (caret && chars[0]) {
+    chars[0].before(caret);
+  }
+
+  if (typewriterMotionQuery.matches) {
+    chars.forEach((char) => char.classList.add("is-visible"));
+    if (caret && chars.length) {
+      chars[chars.length - 1].after(caret);
+    }
+    heading.classList.add("typing-done");
+    return;
+  }
+
+  heading.classList.add("is-typing");
+
+  chars.forEach((char, index) => {
+    const timerId = window.setTimeout(() => {
+      char.classList.add("is-visible");
+      if (caret) {
+        char.after(caret);
+      }
+
+      if (index === chars.length - 1) {
+        heading.classList.remove("is-typing");
+        heading.classList.add("typing-done");
+      }
+    }, heroTypewriterSpeed * index);
+
+    heroTypewriterTimers.push(timerId);
+  });
+};
 
 if (hero && slides.length > 1) {
   let activeIndex = slides.findIndex((slide) => slide.classList.contains("active"));
@@ -41,6 +168,8 @@ if (hero && slides.length > 1) {
       dot.classList.toggle("active", isActive);
       dot.setAttribute("aria-current", isActive ? "true" : "false");
     });
+
+    playHeroTypewriter(slides[activeIndex]);
   };
 
   const nextSlide = () => showSlide(activeIndex + 1);
@@ -78,6 +207,10 @@ if (hero && slides.length > 1) {
 
   showSlide(activeIndex);
   start();
+}
+
+if (hero && slides.length <= 1) {
+  playHeroTypewriter(slides[0]);
 }
 
 const matrixCanvases = hero ? Array.from(hero.querySelectorAll("[data-hero-matrix]")) : [];
@@ -230,6 +363,7 @@ partnerCarousels.forEach((carousel) => {
   let isDragging = false;
   let resizeFrameId = null;
   let suppressClick = false;
+  let pressedPartner = null;
 
   const prepareClone = (clone) => {
     clone.dataset.partnerClone = "true";
@@ -357,6 +491,7 @@ partnerCarousels.forEach((carousel) => {
     }
 
     isDragging = true;
+    pressedPartner = event.target.closest(".partner[href]");
     dragStartX = event.clientX;
     dragOffset = 0;
     didDrag = false;
@@ -388,12 +523,21 @@ partnerCarousels.forEach((carousel) => {
   viewport.addEventListener("dragstart", (event) => event.preventDefault());
   viewport.addEventListener("click", (event) => {
     if (!suppressClick) {
+      const clickedPartner = event.target.closest(".partner[href]");
+
+      if (!clickedPartner && pressedPartner) {
+        event.preventDefault();
+        window.open(pressedPartner.href, pressedPartner.target || "_self", "noopener");
+      }
+
+      pressedPartner = null;
       return;
     }
 
     event.preventDefault();
     event.stopPropagation();
     suppressClick = false;
+    pressedPartner = null;
   }, true);
 
   track.addEventListener("transitionend", (event) => {

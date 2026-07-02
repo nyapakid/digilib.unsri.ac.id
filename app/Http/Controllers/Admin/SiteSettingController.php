@@ -109,7 +109,7 @@ class SiteSettingController extends Controller
         $fieldRules = collect($this->fields())
             ->mapWithKeys(fn (array $field) => [
                 $field[0] => $field[2] === 'file'
-                    ? ['nullable', 'image', 'max:4096']
+                    ? ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,gif', 'max:4096']
                     : ['nullable', 'string'],
             ])
             ->all();

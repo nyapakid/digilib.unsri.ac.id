@@ -78,7 +78,7 @@
 
                         <div class="detail-body">
                             @if($containsHtml)
-                                {!! $detailBody !!}
+                                {!! \App\Support\ContentSanitizer::sanitizeRichHtml($detailBody) !!}
                             @elseif(filled($detailBody))
                                 {!! nl2br(e($detailBody)) !!}
                             @else
@@ -115,7 +115,7 @@
 
                     <div class="detail-body">
                         @if($containsHtml)
-                            {!! $detailBody !!}
+                            {!! \App\Support\ContentSanitizer::sanitizeRichHtml($detailBody) !!}
                         @elseif(filled($detailBody))
                             {!! nl2br(e($detailBody)) !!}
                         @else

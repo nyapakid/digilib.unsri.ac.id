@@ -19,6 +19,8 @@
     @php($detailBody = data_get($item, $bodyColumn) ?: data_get($item, $excerptColumn))
     @php($containsHtml = filled($detailBody) && $detailBody !== strip_tags((string) $detailBody))
     @php($showRelated = in_array($type, ['news', 'services', 'announcements', 'facilities', 'staff'], true))
+    @php($backUrl = $type === 'resources' ? route('home') : route($type.'.index'))
+    @php($backLabel = $type === 'resources' ? 'Beranda' : $sectionTitle)
 
     <section class="page-content">
         <div @class([
@@ -54,7 +56,7 @@
                         @endforelse
                     </div>
 
-                    <p><a class="back-link" href="{{ route($type.'.index') }}">Kembali ke {{ $sectionTitle }}</a></p>
+                    <p><a class="back-link" href="{{ $backUrl }}">Kembali ke {{ $backLabel }}</a></p>
                 </article>
             @elseif($type === 'staff')
                 <article class="staff-detail-card">
@@ -84,7 +86,7 @@
                             @endif
                         </div>
 
-                        <p><a class="back-link" href="{{ route($type.'.index') }}">Kembali ke {{ $sectionTitle }}</a></p>
+                        <p><a class="back-link" href="{{ $backUrl }}">Kembali ke {{ $backLabel }}</a></p>
                     </div>
                 </article>
 
@@ -142,7 +144,7 @@
                         <p><a class="btn" href="{{ $item->url }}" target="_blank" rel="noopener">Buka Tautan <span aria-hidden="true">&rarr;</span></a></p>
                     @endif
 
-                    <p><a class="back-link" href="{{ route($type.'.index') }}">Kembali ke {{ $sectionTitle }}</a></p>
+                    <p><a class="back-link" href="{{ $backUrl }}">Kembali ke {{ $backLabel }}</a></p>
                 </article>
 
                 @includeWhen($showRelated, 'content.partials.related-sidebar')

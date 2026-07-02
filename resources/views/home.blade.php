@@ -61,7 +61,7 @@
     <section class="resources" id="resources">
         <div class="container">
             <div class="section-head">
-                <h2>Digilib e-Resources</h2>
+                <h2>e-Resources</h2>
                 <a class="see-all" href="{{ route('resources.index') }}">Lihat Semua <span aria-hidden="true">&rarr;</span></a>
             </div>
             <div class="resource-grid">
